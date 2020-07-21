@@ -11,24 +11,21 @@ import transformers
 
 
 class shopee_raw(data.Dataset):
-    def __init__(self, data_root_dir, max_len=100, is_train=True, split_coef=0.1):
+    def __init__(self, data_root_dir, max_len=100, is_train=True):
         super().__init__()
 
         self.is_train = is_train
         self.root_dir = data_root_dir
 
         csv_train_dir = self.root_dir + 'train.csv'
-        csv_test_dir = self.root_dir + 'test.csv'
-        self.reviews = list(pd.read_csv(csv_train_dir)['review'])
-        self.targets = list(pd.read_csv(csv_train_dir)['rating'])
+        csv_val_dir = self.root_dir + 'val.csv'
 
-        len_full = len(self.reviews)
         if self.is_train:
-            self.reviews = self.reviews[:int(split_coef*len_full)]
-            self.targets = self.targets[:int(split_coef*len_full)]
+            self.reviews = list(pd.read_csv(csv_train_dir)['review'])
+            self.targets = list(pd.read_csv(csv_train_dir)['rating'])
         elif self.is_train == False:
-            self.reviews = self.reviews[:int(split_coef*len_full):-1]
-            self.targets = self.targets[:int(split_coef*len_full):-1]
+            self.reviews = list(pd.read_csv(csv_val_dir)['review'])
+            self.targets = list(pd.read_csv(csv_val_dir)['rating'])
 
         self.targets = list(map(int, self.targets))
         self.tokenizer = self.get_tokenizer('bert-base-uncased')
@@ -37,7 +34,7 @@ class shopee_raw(data.Dataset):
     def __getitem__(self, idx):
 
         review = str(self.reviews[idx])
-        target = self.targets[idx]-1
+        target = self.targets[idx]-1  # 1-> 5 map to 0 -> 4
         encoding = self.tokenizer.encode_plus(
             review,
             add_special_tokens=True,

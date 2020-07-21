@@ -1,0 +1,53 @@
+id: 1
+pretrained: Null
+model:
+    name:                       baseline_sentiment_bert
+    args:
+        nclasses:               5
+        freeze:                 True
+optimizer:
+    name:                       Adam
+    args:
+        lr:                     0.01
+loss:
+    name:                       SmoothedCrossEntropy
+    args:
+metric:
+    -   name:                   Accuracy
+        args:                   Null
+    -   name:                   ConfusionMatrix
+        args:                       
+            nclasses:           5
+
+scheduler:
+    name:                         ReduceLROnPlateau
+    args:
+        mode:                     min
+        factor:                   0.5
+        patience:                 5 
+        verbose:                  True         
+dataset:
+    train:
+        name: shopee_raw
+        args:
+            data_root_dir:      /content/shopee-contest6/data/full/         
+            is_train:           True  
+        loader:
+            name: shopee_loader
+            args:
+                batch_size:     64
+                shuffle:        True
+    val:
+        name: shopee_raw
+        args:
+            data_root_dir:      /content/shopee-contest6/data/full/          
+            is_train:           False  
+        loader:
+            name: shopee_loader
+            args:
+                batch_size:     64
+trainer: 
+    nepochs: 10
+    cp_dir: /content/gdrive/My Drive/Shopee competition/contest6/cp
+    val_step: 1
+    log_step: 1
