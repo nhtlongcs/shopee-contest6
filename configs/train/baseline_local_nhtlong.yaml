@@ -1,10 +1,9 @@
 id: 1
 pretrained: Null
 model:
-    name:                       baseline_eff_net
+    name:                       baseline_sentiment_bert
     args:
-        version:                2
-        nclasses:               42
+        nclasses:               5
         freeze:                 False
 optimizer:
     name:                       Adam
@@ -18,22 +17,20 @@ metric:
         args:                   Null
     -   name:                   ConfusionMatrix
         args:                       
-            nclasses:           42
-            output_dir:         '/home/ken/shopee_ws/cp'    
+            nclasses:           5
+
 scheduler:
-    name:                       CosineAnnealingLR
+    name:                         ReduceLROnPlateau
     args:
-        T_max:                  2306        
+        mode:                     min
+        factor:                   0.5
+        patience:                 5 
+        verbose:                  True         
 dataset:
     train:
         name: shopee_raw
         args:
-            data_root_dir:      /home/ken/shopee_ws/data/         
-            train_dir:          train/train/
-            test_dir:           test/test/
-            csv_train_dir:      train.csv  
-            csv_val_dir:        val.csv  
-            csv_test_dir:       test.csv
+            data_root_dir:      /home/ken/shopee_ws/sentiment/shopee-contest6/data/         
             is_train:           True  
         loader:
             name: shopee_loader
@@ -43,12 +40,7 @@ dataset:
     val:
         name: shopee_raw
         args:
-            data_root_dir:      /home/ken/shopee_ws/data/          
-            train_dir:          train/train/
-            test_dir:           test/test/
-            csv_train_dir:      train.csv  
-            csv_val_dir:        val.csv
-            csv_test_dir:       test.csv
+            data_root_dir:      /home/ken/shopee_ws/sentiment/shopee-contest6/data/          
             is_train:           False  
         loader:
             name: shopee_loader
@@ -56,6 +48,6 @@ dataset:
                 batch_size:     2
 trainer: 
     nepochs: 10
-    cp_dir: /home/ken/shopee_ws/cp/
+    cp_dir: /home/ken/shopee_ws/sentiment/shopee-contest6/cp
     val_step: 1
     log_step: 1

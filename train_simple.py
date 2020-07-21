@@ -12,6 +12,9 @@ from utils.getter import get_instance
 
 import argparse
 import pprint
+import logging
+
+logging.basicConfig(level=logging.ERROR)
 
 
 def train(config):

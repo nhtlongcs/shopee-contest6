@@ -37,10 +37,10 @@ class Accuracy():
 
 
 class ConfusionMatrix():
-    def __init__(self, nclasses, output_dir, verbose=False):
+    def __init__(self, nclasses, verbose=False):
         self.nclasses = nclasses
         self.reset()
-        self.output_dir = output_dir
+        # self.output_dir = output_dir
         self.count = 1
         self.verbose = verbose
 
@@ -63,13 +63,14 @@ class ConfusionMatrix():
         return self.cm
 
     def display(self, output_dir, name):
-        df_cm = pd.DataFrame(self.cm, index=range(
-            self.nclasses), columns=range(self.nclasses))
-        if self.verbose:
-            print(df_cm)
-        plt.figure(figsize=(10, 7))
-        sn.heatmap(df_cm, annot=True, cmap='YlGnBu')
-        plt.tight_layout()
-        # plt.show()
-        plt.savefig(os.path.join(output_dir, name))
-        plt.close()
+        pass
+        # df_cm = pd.DataFrame(self.cm, index=range(
+        #     self.nclasses), columns=range(self.nclasses))
+        # if self.verbose:
+        #     print(df_cm)
+        # plt.figure(figsize=(10, 7))
+        # sn.heatmap(df_cm, annot=True, cmap='YlGnBu')
+        # plt.tight_layout()
+        # # plt.show()
+        # plt.savefig(os.path.join(output_dir, name))
+        # plt.close()
