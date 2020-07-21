@@ -1,8 +1,8 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from datasets.shopee import shopee_raw
 import transformers
+from tqdm import tqdm
 
 
 class baseline_sentiment_bert(nn.Module):
@@ -40,8 +40,8 @@ class baseline_sentiment_bert(nn.Module):
 
 if __name__ == "__main__":
     dev = torch.device('cpu')
-    dataset = shopee_raw('/home/ken/shopee_ws/sentiment/shopee-contest6/data/')
     net = baseline_sentiment_bert(5).to(dev)
+    print(net)
     criterion = nn.CrossEntropyLoss()
     optimizer = torch.optim.SGD(net.parameters(), lr=0.001)
 
