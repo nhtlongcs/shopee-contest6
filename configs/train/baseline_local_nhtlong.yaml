@@ -4,7 +4,7 @@ model:
     name:                       baseline_sentiment_bert
     args:
         nclasses:               5
-        freeze:                 False
+        freeze:                 True
 optimizer:
     name:                       Adam
     args:
