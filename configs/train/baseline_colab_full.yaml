@@ -30,7 +30,7 @@ dataset:
     train:
         name: shopee_raw
         args:
-            data_root_dir:      /content/shopee-contest6/data/full/         
+            data_root_dir:      /content/shopee-contest6/data/clean/full/         
             is_train:           True  
         loader:
             name: shopee_loader
@@ -40,7 +40,7 @@ dataset:
     val:
         name: shopee_raw
         args:
-            data_root_dir:      /content/shopee-contest6/data/full/          
+            data_root_dir:      /content/shopee-contest6/data/clean/full/          
             is_train:           False  
         loader:
             name: shopee_loader
