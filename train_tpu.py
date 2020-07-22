@@ -94,7 +94,7 @@ def train(config):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        '--config', default='configs/train/baseline_local_nhtlong_lightning.yaml')
+        '--config', default='configs/train/tpu_colab_xlnet_full_unfreeze.yaml')
     parser.add_argument('--gpus', default=0)
     parser.add_argument('--seed', default=123)
     parser.add_argument('--debug', default=False)
