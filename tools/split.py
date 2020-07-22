@@ -6,7 +6,7 @@ TRAIN = 'train_train'
 VAL = 'train_val'
 
 parser = argparse.ArgumentParser()
-parser.add_argument('-csv', type=str, default='/home/ken/shopee_ws/sentiment/shopee-contest6/data/train.csv',
+parser.add_argument('-csv', type=str, default='/home/ken/shopee_ws/sentiment/clean_data/train.csv',
                     help='path to csv file')
 parser.add_argument('-ratio', type=float, default=0.9,
                     help='ratio of the train set (default: 0.9)')
