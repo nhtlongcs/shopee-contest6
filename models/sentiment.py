@@ -45,39 +45,29 @@ class xlnet_sentiment(nn.Module):
 
     def __init__(self, nclasses, freeze=False):
         super().__init__()
-
-        self.bert = transformers.XLNet.from_pretrained('bert-base-uncased')
+        self.nclasses = nclasses
+        self.xlnet = transformers.XLNetForSequenceClassification.from_pretrained(
+            "xlnet-base-cased", num_labels=nclasses)
         if freeze:
             self.freeze()
-        self.feature_dim = self.bert.config.hidden_size
-
-        self.classifier = nn.Sequential(
-            nn.Linear(self.feature_dim, 512),
-            nn.Dropout(0.2),
-            nn.BatchNorm1d(512),
-            nn.ReLU(),
-            nn.Dropout(0.2),
-            nn.Linear(512, nclasses)
-        )
 
     def forward(self, input_ids, attention_mask):
-
-        _, pooled_output = self.bert(
+        outputs = self.xlnet(
             input_ids=input_ids,
             attention_mask=attention_mask
         )
-        logits = self.classifier(pooled_output)
+        logits = outputs[0]
         return logits
 
     def freeze(self):
 
-        for param in self.bert.parameters():
+        for param in self.xlnet.transformer.parameters():
             param.requires_grad = False
 
 
 if __name__ == "__main__":
     dev = torch.device('cpu')
-    net = baseline_sentiment_bert(5).to(dev)
+    net = xlnet_sentiment(5).to(dev)
     print(net)
     criterion = nn.CrossEntropyLoss()
     optimizer = torch.optim.SGD(net.parameters(), lr=0.001)
@@ -85,14 +75,14 @@ if __name__ == "__main__":
     tbar = tqdm(range(100))
     for iter_id in tbar:
         inps = {
-            'input_ids': torch.rand(8, 100).to(dev),
-            'attention_mask': torch.rand(8, 100).to(dev),
-            'targets': torch.randint(low=0, high=2, size=(8)).to(dev)
+            'input_ids': torch.rand(8, 100).long().to(dev),
+            'attention_mask': torch.rand(8, 100).long().to(dev),
         }
-        lbls = torch.randint(low=0, high=2, size=(8)).to(dev),
+        lbls = torch.rand(8, 1).long().to(dev)
 
-        outs = net(inps)
-
+        outs = net(inps['input_ids'], inps['attention_mask'])
+        print(type(outs))
+        print(type(lbls))
         loss = criterion(outs, lbls)
         loss.backward()
         optimizer.step()
