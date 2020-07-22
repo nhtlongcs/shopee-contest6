@@ -10,10 +10,10 @@ class baseline_sentiment_bert(nn.Module):
 
     def __init__(self, nclasses, freeze=False):
         super().__init__()
-        if freeze:
-            self.freeze()
 
         self.bert = transformers.BertModel.from_pretrained('bert-base-uncased')
+        if freeze:
+            self.freeze()
         self.feature_dim = self.bert.config.hidden_size
 
         self.classifier = nn.Sequential(
