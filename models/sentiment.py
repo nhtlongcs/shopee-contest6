@@ -47,7 +47,7 @@ class xlnet_sentiment(nn.Module):
         super().__init__()
         self.nclasses = nclasses
         self.xlnet = transformers.XLNetForSequenceClassification.from_pretrained(
-            "xlnet-base-cased", num_labels=nclasses)
+            "xlnet-large-cased", num_labels=nclasses)
         if freeze:
             self.freeze()
 

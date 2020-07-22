@@ -109,7 +109,7 @@ class shopee_xlnet(data.Dataset):
     def get_tokenizer(self, pretrain=None):
         if pretrain == None:
             return transformers.XLNetTokenizer
-        return transformers.XLNetTokenizer.from_pretrained('xlnet-base-cased')
+        return transformers.XLNetTokenizer.from_pretrained('xlnet-large-cased')
 
 
 # test
