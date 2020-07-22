@@ -1,10 +1,10 @@
-id: 2
+id: 3
 pretrained: Null
 model:
     name:                       baseline_sentiment_bert
     args:
         nclasses:               5
-        freeze:                 True
+        freeze:                 False
 optimizer:
     name:                       Adam
     args:
@@ -30,24 +30,24 @@ dataset:
     train:
         name: shopee_raw
         args:
-            data_root_dir:      /home/ken/shopee_ws/sentiment/shopee-contest6/data/clean/full/         
+            data_root_dir:      /content/shopee-contest6/data/clean/full/         
             is_train:           True  
         loader:
             name: shopee_loader
             args:
-                batch_size:     2
+                batch_size:     64
                 shuffle:        True
     val:
         name: shopee_raw
         args:
-            data_root_dir:      /home/ken/shopee_ws/sentiment/shopee-contest6/data/clean/full/          
+            data_root_dir:      /content/shopee-contest6/data/clean/full/          
             is_train:           False  
         loader:
             name: shopee_loader
             args:
-                batch_size:     2
+                batch_size:     64
 trainer: 
     nepochs: 10
-    cp_dir: /home/ken/shopee_ws/sentiment/shopee-contest6/cp
+    cp_dir: /content/gdrive/My Drive/Shopee competition/contest6/cp
     val_step: 1
     log_step: 1

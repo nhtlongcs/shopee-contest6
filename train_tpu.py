@@ -75,9 +75,8 @@ def train(config):
     cp_dir = config['trainer']['cp_dir']
     cp_dir = os.path.join(
         cp_dir, config['model']['name']) + str(config.get('id', 'None'))
-
     checkpoint_callback = ModelCheckpoint(
-        filepath=cp_dir + '{epoch}-{train_loss:.3f}-{val_acc:.2f}')
+        filepath=cp_dir + '/{epoch}-{train_loss:.3f}-{val_acc:.2f}')
 
     trainer = pl.Trainer(
         max_epochs=config['trainer']['nepochs'],
@@ -85,9 +84,9 @@ def train(config):
         gpus=(1 if torch.cuda.is_available() else 0),
         check_val_every_n_epoch=config['trainer']['val_step'],
         checkpoint_callback=checkpoint_callback,
-        default_root_dir='logs',
+        default_root_dir='runs',
         logger=pl.loggers.TensorBoardLogger(
-            'logs/', name=config['model']['name'], version=config.get('id', 'None'))
+            'runs/', name=config['model']['name'], version=config.get('id', 'None'))
     )
     trainer.fit(sentiment_pipeline)
 
@@ -95,7 +94,7 @@ def train(config):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        '--config', default='configs/train/tpu_colab_full_unfreeze.yaml')
+        '--config', default='configs/train/baseline_local_nhtlong_lightning.yaml')
     parser.add_argument('--gpus', default=0)
     parser.add_argument('--seed', default=123)
     parser.add_argument('--debug', default=False)
