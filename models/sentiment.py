@@ -94,6 +94,10 @@ class bert_base(nn.Module):
     def __init__(self, nclasses, freeze=False):
         super().__init__()
         self.nclasses = nclasses
+        self.config = transformers.BertConfig(
+            vocab_size=50_000
+
+        )
         self.bert = transformers.BertForSequenceClassification.from_pretrained(
             "bert-base-uncased", num_labels=nclasses)
         if freeze:
@@ -105,6 +109,7 @@ class bert_base(nn.Module):
             attention_mask=attention_mask
         )
         logits = outputs[0]
+        print(logits)
         return logits
 
     def freeze(self):

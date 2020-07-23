@@ -69,34 +69,8 @@ class shopee_dummy(shopee_raw):
             data_root_dir, max_len=256, is_train=is_train)
 
     def get_tokenizer(self, pretrain=None):
-        import collections
-
-        def create_vocab(berttokenizer, vocab, max_vocab_size=30522):
-            t = berttokenizer.vocab
-            vocab_dict = collections.OrderedDict()
-            idx = 0
-
-            for i, j in list(t.items())[:999]:
-                vocab_dict.update({i: j})
-                idx += 1
-
-            for i, j in vocab.freqs.most_common(max_vocab_size):
-                vocab_dict.update({i: idx})
-                idx += 1
-                if idx == max_vocab_size:
-                    break
-            return vocab_dict
-
-        def load_vocab(path='data/vocab.pkl'):
-            with open(path, 'rb') as f:
-                data = pickle.load(f)
-            return data
-
         tokenizer = transformers.BertTokenizer.from_pretrained(
             'bert-base-uncased')
-        vocab = load_vocab()
-        new_vocab = create_vocab(tokenizer, vocab)
-        tokenizer.vocab = new_vocab
         return tokenizer
 
 

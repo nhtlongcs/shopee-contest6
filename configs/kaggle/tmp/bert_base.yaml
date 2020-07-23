@@ -4,7 +4,7 @@ model:
     name:                       bert_base
     args:
         nclasses:               5
-        freeze:                 False
+        freeze:                 True
 optimizer:
     name:                       Adam
     args:
