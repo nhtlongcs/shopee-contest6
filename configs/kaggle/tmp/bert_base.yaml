@@ -10,7 +10,7 @@ optimizer:
     args:
         lr:                     0.01
 loss:
-    name:                       SmoothedCrossEntropy
+    name:                       CrossEntropyLoss
     args:
 metric:
     -   name:                   Accuracy
@@ -28,24 +28,24 @@ scheduler:
         verbose:                  True         
 dataset:
     train:
-        name: shopee_dummy
+        name: shopee_bert_base
         args:
             data_root_dir:      ./data/clean/full/         
             is_train:           True  
         loader:
             name: shopee_loader
             args:
-                batch_size:     64
+                batch_size:     5
                 shuffle:        True
     val:
-        name: shopee_dummy
+        name: shopee_bert_base
         args:
             data_root_dir:      ./data/clean/full/          
             is_train:           False  
         loader:
             name: shopee_loader
             args:
-                batch_size:     64
+                batch_size:     5
 trainer: 
     nepochs: 10
     cp_dir: ./cp
