@@ -11,9 +11,8 @@ from torchvision import transforms as tvtf
 from utils.getter import get_instance
 
 # config_path = '/content/shopee-contest2/configs/train/baseline_colab.yaml'
-cp_model_dir = '/home/ken/shopee_ws/cp/best_loss.pth'
-test_dir = '/content/data/test/test/'
-csv_test_dir = '/content/data/test.csv'
+cp_model_dir = './cp/bert_multi3/best_metric_Accuracy.pth'
+csv_test_dir = './data/clean/test.csv'
 
 config = torch.load(cp_model_dir).device('cpu')['config']
 
@@ -31,30 +30,30 @@ print('load weights-----------------------')
 print('generate submission----------------')
 model.eval()
 with torch.no_grad():
-    data = list(csv.reader(open(csv_test_dir)))
-    data.pop(0)
-    data, _ = zip(*data)
+    data = list(pd.read_csv(csv_test_dir)['review'])
     result = []
     cnt = 0
     for item in tqdm(data):
-        item_path = os.path.join(test_dir, item)
-        image = Image.open(item_path).convert('RGB')
 
-        tf = tvtf.Compose([tvtf.Resize(224),
-                           tvtf.CenterCrop(224),
-                           tvtf.ToTensor(),
-                           tvtf.Normalize(mean=[0.485, 0.456, 0.406],
-                                          std=[0.229, 0.224, 0.225])
-                           ])
-        image = tf(image).unsqueeze(0)
-        image = image.to(device)
-        outputs = model(image)
+        review = str(item).lower() + "[SEP] [CLS]"
+        encoding = tokenizer.encode_plus(
+            review,
+            add_special_tokens=True,
+            max_length=max_len,
+            return_token_type_ids=False,
+            pad_to_max_length=True,
+            return_attention_mask=True,
+            return_tensors='pt',
+        )
+        review = encoding['input_ids'].flatten().unsqueeze(0).to(device)
+        mask = encoding['attention_mask'].flatten().unsqueeze(0).to(device)
+
+        outputs = model(review, mask)
         probs = torch.softmax(outputs, dim=1).to('cpu')
         pred = probs.argmax(dim=1).numpy()
         result.append(pred)
 
 result = list(map(int, result))
-result = ["{0:0=2d}".format(x) for x in result]
 
-df = pandas.DataFrame(data={"filename": data, "category": result})
+df = pandas.DataFrame(data={"id": data, "rating": result})
 df.to_csv("./submission.csv", sep=',', index=False)
