@@ -47,7 +47,7 @@ dataset:
             args:
                 batch_size:     32
 trainer: 
-    nepochs: 10
+    nepochs: 50
     cp_dir: ./cp
     val_step: 1
     log_step: 1
