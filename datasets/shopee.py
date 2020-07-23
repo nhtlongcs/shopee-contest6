@@ -70,7 +70,7 @@ class shopee_dummy(shopee_raw):
 
     def get_tokenizer(self, pretrain=None):
         tokenizer = transformers.BertTokenizer.from_pretrained(
-            'bert-base-uncased')
+            './tokenizer30000/bert', max_len=self.max_len)
         return tokenizer
 
 
