@@ -67,9 +67,7 @@ class shopee_dummy(shopee_raw):
             data_root_dir, max_len=256, is_train=is_train)
 
     def get_tokenizer(self, pretrain=None):
-        if pretrain == None:
-            return transformers.BertTokenizer
-        return transformers.BertTokenizer.from_pretrained(pretrain)
+        return transformers.BertTokenizerFast(vocab_file="data/vocab_train.txt")
 
 
 class shopee_xlnet_base(shopee_raw):
