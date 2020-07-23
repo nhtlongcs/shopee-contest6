@@ -98,6 +98,7 @@ if __name__ == '__main__':
     parser.add_argument('--gpus', default=0)
     parser.add_argument('--seed', default=123)
     parser.add_argument('--debug', default=False)
+    parser.add_argument('--cp_dir', default='./cp')
 
     args = parser.parse_args()
     seed_everything(seed=args.seed)
@@ -105,4 +106,5 @@ if __name__ == '__main__':
     config = yaml.load(open(config_path, 'r'), Loader=yaml.Loader)
     config['gpus'] = args.gpus
     config['debug'] = args.debug
+    config['cp_dir'] = args.cp_dir
     train(config)
