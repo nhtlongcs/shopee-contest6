@@ -16,10 +16,11 @@ class shopee_raw(data.Dataset):
 
         self.is_train = is_train
         self.root_dir = data_root_dir
-
         csv_train_dir = self.root_dir + 'train.csv'
         csv_val_dir = self.root_dir + 'val.csv'
-
+        print(csv_train_dir)
+        print(csv_val_dir)
+        print(is_train)
         if self.is_train:
             self.reviews = list(pd.read_csv(csv_train_dir)['review'])
             self.targets = list(pd.read_csv(csv_train_dir)['rating'])
@@ -63,7 +64,7 @@ class shopee_raw(data.Dataset):
 class shopee_dummy(shopee_raw):
     def __init__(self, data_root_dir, max_len=256, is_train=True):
         super(shopee_dummy, self).__init__(
-            data_root_dir, max_len=256, is_train=True)
+            data_root_dir, max_len=256, is_train=is_train)
 
     def get_tokenizer(self, pretrain=None):
         if pretrain == None:
@@ -74,7 +75,7 @@ class shopee_dummy(shopee_raw):
 class shopee_xlnet_base(shopee_raw):
     def __init__(self, data_root_dir, max_len=256, is_train=True):
         super(shopee_xlnet_base, self).__init__(
-            data_root_dir, max_len=256, is_train=True)
+            data_root_dir, max_len=256, is_train=is_train)
 
     def get_tokenizer(self, pretrain=None):
         return transformers.XLNetTokenizer.from_pretrained('xlnet-base-cased')
@@ -83,7 +84,7 @@ class shopee_xlnet_base(shopee_raw):
 class shopee_xlnet_large(shopee_raw):
     def __init__(self, data_root_dir, max_len=256, is_train=True):
         super(shopee_xlnet_large, self).__init__(
-            data_root_dir, max_len=256, is_train=True)
+            data_root_dir, max_len=256, is_train=is_train)
 
     def get_tokenizer(self, pretrain=None):
         if pretrain == None:
@@ -94,7 +95,7 @@ class shopee_xlnet_large(shopee_raw):
 class shopee_bert_base(shopee_raw):
     def __init__(self, data_root_dir, max_len=256, is_train=True):
         super(shopee_bert_base, self).__init__(
-            data_root_dir, max_len=256, is_train=True)
+            data_root_dir, max_len=256, is_train=is_train)
 
     def get_tokenizer(self, pretrain=None):
         return transformers.BertTokenizer.from_pretrained('bert-base-uncased')
@@ -103,7 +104,7 @@ class shopee_bert_base(shopee_raw):
 class shopee_bert_large(shopee_raw):
     def __init__(self, data_root_dir, max_len=256, is_train=True):
         super(shopee_bert_large, self).__init__(
-            data_root_dir, max_len=256, is_train=True)
+            data_root_dir, max_len=256, is_train=is_train)
 
     def get_tokenizer(self, pretrain=None):
         return transformers.BertTokenizer.from_pretrained('bert-large-uncased')
@@ -112,7 +113,7 @@ class shopee_bert_large(shopee_raw):
 class shopee_bert_multi(shopee_raw):
     def __init__(self, data_root_dir, max_len=256, is_train=True):
         super(shopee_bert_multi, self).__init__(
-            data_root_dir, max_len=256, is_train=True)
+            data_root_dir, max_len=256, is_train=is_train)
 
     def get_tokenizer(self, pretrain=None):
         return transformers.BertTokenizer.from_pretrained('bert-base-multilingual-uncased')
@@ -120,9 +121,9 @@ class shopee_bert_multi(shopee_raw):
 
 # test
 if __name__ == "__main__":
-    dataset = shopee_raw(
+    dataset = shopee_bert_multi(
         '/home/ken/shopee_ws/sentiment/shopee-contest6/data/clean/full/')
     # print(dataset[2]['review_text'])
-    print(dataset[2]['input_ids'])
+    # print(dataset[2]['input_ids'])
     # print(dataset[2]['attention_mask'])
     # print(dataset[2]['targets'])

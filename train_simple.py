@@ -54,6 +54,7 @@ def train(config):
     print("Total step = ", len(train_dataloader) + len(val_dataloader))
     print("=================================")
     # 2: Define network
+    saddsa
     set_seed()
     model = get_instance(config['model']).to(device)
     # Train from pretrained if it is not None
