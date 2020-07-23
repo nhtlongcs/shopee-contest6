@@ -70,7 +70,7 @@ class shopee_dummy(shopee_raw):
 
     def get_tokenizer(self, pretrain=None):
         tokenizer = transformers.BertTokenizer.from_pretrained(
-            './tokenizer30000/bert', max_len=self.max_len)
+            './tokenizer30000/bert', max_len=256)
         return tokenizer
 
 
@@ -100,7 +100,7 @@ class shopee_bert_base(shopee_raw):
             data_root_dir, max_len=256, is_train=is_train)
 
     def get_tokenizer(self, pretrain=None):
-        return transformers.BertTokenizer.from_pretrained('bert-base-uncased')
+        return transformers.BertTokenizer.from_pretrained('./tokenizer30000/bert', max_len=256)
 
 
 class shopee_bert_large(shopee_raw):
@@ -109,7 +109,7 @@ class shopee_bert_large(shopee_raw):
             data_root_dir, max_len=256, is_train=is_train)
 
     def get_tokenizer(self, pretrain=None):
-        return transformers.BertTokenizer.from_pretrained('bert-large-uncased')
+        return transformers.BertTokenizer.from_pretrained('./tokenizer30000/bert', max_len=256)
 
 
 class shopee_bert_multi(shopee_raw):
