@@ -40,7 +40,31 @@ class baseline_sentiment_bert(nn.Module):
             param.requires_grad = False
 
 
-class xlnet_sentiment(nn.Module):
+class xlnet_base(nn.Module):
+    """Baseline model"""
+
+    def __init__(self, nclasses, freeze=False):
+        super().__init__()
+        self.nclasses = nclasses
+        self.xlnet = transformers.XLNetForSequenceClassification.from_pretrained(
+            "xlnet-base-cased", num_labels=nclasses)
+        if freeze:
+            self.freeze()
+
+    def forward(self, input_ids, attention_mask):
+        outputs = self.xlnet(
+            input_ids=input_ids,
+            attention_mask=attention_mask
+        )
+        logits = outputs[0]
+        return logits
+
+    def freeze(self):
+        for param in self.xlnet.transformer.parameters():
+            param.requires_grad = False
+
+
+class xlnet_large(nn.Module):
     """Baseline model"""
 
     def __init__(self, nclasses, freeze=False):
@@ -60,8 +84,79 @@ class xlnet_sentiment(nn.Module):
         return logits
 
     def freeze(self):
+        for param in self.model.transformer.parameters():
+            param.requires_grad = False
 
-        for param in self.xlnet.transformer.parameters():
+
+class bert_base(nn.Module):
+    """Baseline model"""
+
+    def __init__(self, nclasses, freeze=False):
+        super().__init__()
+        self.nclasses = nclasses
+        self.bert = transformers.BertForSequenceClassification.from_pretrained(
+            "bert-base-uncased", num_labels=nclasses)
+        if freeze:
+            self.freeze()
+
+    def forward(self, input_ids, attention_mask):
+        outputs = self.bert(
+            input_ids=input_ids,
+            attention_mask=attention_mask
+        )
+        logits = outputs[0]
+        return logits
+
+    def freeze(self):
+        for param in self.bert.bert.parameters():
+            param.requires_grad = False
+
+
+class bert_large(nn.Module):
+    """Baseline model"""
+
+    def __init__(self, nclasses, freeze=False):
+        super().__init__()
+        self.nclasses = nclasses
+        self.bert = transformers.BertForSequenceClassification.from_pretrained(
+            "bert-large-uncased", num_labels=nclasses)
+        if freeze:
+            self.freeze()
+
+    def forward(self, input_ids, attention_mask):
+        outputs = self.bert(
+            input_ids=input_ids,
+            attention_mask=attention_mask
+        )
+        logits = outputs[0]
+        return logits
+
+    def freeze(self):
+        for param in self.bert.bert.parameters():
+            param.requires_grad = False
+
+
+class bert_multi(nn.Module):
+    """Baseline model"""
+
+    def __init__(self, nclasses, freeze=False):
+        super().__init__()
+        self.nclasses = nclasses
+        self.bert = transformers.BertForSequenceClassification.from_pretrained(
+            "bert-base-multilingual-uncased", num_labels=nclasses)
+        if freeze:
+            self.freeze()
+
+    def forward(self, input_ids, attention_mask):
+        outputs = self.bert(
+            input_ids=input_ids,
+            attention_mask=attention_mask
+        )
+        logits = outputs[0]
+        return logits
+
+    def freeze(self):
+        for param in self.bert.bert.parameters():
             param.requires_grad = False
 
 

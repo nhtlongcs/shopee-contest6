@@ -1,7 +1,7 @@
-id: 2
+id: 3
 pretrained: Null
 model:
-    name:                       baseline_sentiment_bert
+    name:                       xlnet_base
     args:
         nclasses:               5
         freeze:                 True
@@ -28,26 +28,26 @@ scheduler:
         verbose:                  True         
 dataset:
     train:
-        name: shopee_raw
+        name: shopee_xlnet_base
         args:
-            data_root_dir:      /home/ken/shopee_ws/sentiment/shopee-contest6/data/clean/full/         
+            data_root_dir:      ./clean/full/         
             is_train:           True  
         loader:
             name: shopee_loader
             args:
-                batch_size:     2
+                batch_size:     64
                 shuffle:        True
     val:
-        name: shopee_raw
+        name: shopee_xlnet_base
         args:
-            data_root_dir:      /home/ken/shopee_ws/sentiment/shopee-contest6/data/clean/full/          
+            data_root_dir:      ./clean/full/          
             is_train:           False  
         loader:
             name: shopee_loader
             args:
-                batch_size:     2
+                batch_size:     64
 trainer: 
     nepochs: 10
-    cp_dir: /home/ken/shopee_ws/sentiment/shopee-contest6/cp
+    cp_dir: ./cp
     val_step: 1
     log_step: 1
