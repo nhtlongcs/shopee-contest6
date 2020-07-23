@@ -23,11 +23,11 @@ class shopee_raw(data.Dataset):
         print(csv_val_dir)
         print(is_train)
         if self.is_train:
-            self.reviews = list(pd.read_csv(csv_train_dir)['review'])[:64]
-            self.targets = list(pd.read_csv(csv_train_dir)['rating'])[:64]
+            self.reviews = list(pd.read_csv(csv_train_dir)['review'])[:65]
+            self.targets = list(pd.read_csv(csv_train_dir)['rating'])[:65]
         elif self.is_train == False:
-            self.reviews = list(pd.read_csv(csv_val_dir)['review'])[:64]
-            self.targets = list(pd.read_csv(csv_val_dir)['rating'])[:64]
+            self.reviews = list(pd.read_csv(csv_val_dir)['review'])[:65]
+            self.targets = list(pd.read_csv(csv_val_dir)['rating'])[:65]
 
         self.targets = list(map(int, self.targets))
         self.tokenizer = self.get_tokenizer('bert-base-uncased')
