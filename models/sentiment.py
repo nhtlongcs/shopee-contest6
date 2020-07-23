@@ -109,7 +109,6 @@ class bert_base(nn.Module):
             attention_mask=attention_mask
         )
         logits = outputs[0]
-        print(logits)
         return logits
 
     def freeze(self):

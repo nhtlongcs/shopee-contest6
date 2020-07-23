@@ -106,5 +106,5 @@ if __name__ == '__main__':
     config = yaml.load(open(config_path, 'r'), Loader=yaml.Loader)
     config['gpus'] = args.gpus
     config['debug'] = args.debug
-    config['cp_dir'] = args.cp_dir
+    config['trainer']['cp_dir'] = args.cp_dir
     train(config)

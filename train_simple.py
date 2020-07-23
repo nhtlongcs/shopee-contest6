@@ -104,7 +104,7 @@ if __name__ == "__main__":
         '--config', default='configs/train/baseline_local_nhtlong.yaml')
     parser.add_argument('--gpus', default=0)
     parser.add_argument('--debug', default=False)
-    parser.add_argument('--cp_dir', default='./cp')
+    parser.add_argument('--cp_dir', default='./aaaa')
 
     args = parser.parse_args()
 
@@ -112,6 +112,5 @@ if __name__ == "__main__":
     config = yaml.load(open(config_path, 'r'), Loader=yaml.Loader)
     config['gpus'] = args.gpus
     config['debug'] = args.debug
-    config['cp_dir'] = args.cp_dir
-
+    config['trainer']['cp_dir'] = args.cp_dir
     train(config)
