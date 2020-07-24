@@ -81,6 +81,7 @@ def train(config):
     trainer = pl.Trainer(
         max_epochs=config['trainer']['nepochs'],
         num_tpu_cores=8,
+        progress_bar_refresh_rate=20,
         gpus=(1 if torch.cuda.is_available() else 0),
         check_val_every_n_epoch=config['trainer']['val_step'],
         checkpoint_callback=checkpoint_callback,

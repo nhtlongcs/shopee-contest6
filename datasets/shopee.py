@@ -12,7 +12,7 @@ import transformers
 
 
 class shopee_raw(data.Dataset):
-    def __init__(self, data_root_dir, max_len=256, is_train=True):
+    def __init__(self, data_root_dir, max_len=512, is_train=True):
         super().__init__()
 
         self.is_train = is_train
@@ -36,7 +36,7 @@ class shopee_raw(data.Dataset):
 
     def __getitem__(self, idx):
 
-        review = str(self.reviews[idx]).lower() + "[SEP] [CLS]"
+        review = str(self.reviews[idx]).lower()  # + "[SEP] [CLS]"
         target = self.targets[idx]-1  # 1-> 5 map to 0 -> 4
         encoding = self.tokenizer.encode_plus(
             review,
@@ -64,29 +64,29 @@ class shopee_raw(data.Dataset):
 
 
 class shopee_dummy(shopee_raw):
-    def __init__(self, data_root_dir, max_len=256, is_train=True):
+    def __init__(self, data_root_dir, max_len=512, is_train=True):
         super(shopee_dummy, self).__init__(
-            data_root_dir, max_len=256, is_train=is_train)
+            data_root_dir, max_len=512, is_train=is_train)
 
     def get_tokenizer(self, pretrain=None):
         tokenizer = transformers.BertTokenizer.from_pretrained(
-            './tokenizer30000/bert', max_len=256)
+            './tokenizer30000/bert', max_len=512)
         return tokenizer
 
 
 class shopee_xlnet_base(shopee_raw):
-    def __init__(self, data_root_dir, max_len=256, is_train=True):
+    def __init__(self, data_root_dir, max_len=512, is_train=True):
         super(shopee_xlnet_base, self).__init__(
-            data_root_dir, max_len=256, is_train=is_train)
+            data_root_dir, max_len=512, is_train=is_train)
 
     def get_tokenizer(self, pretrain=None):
         return transformers.XLNetTokenizer.from_pretrained('./tokenizer30000/xlnet')
 
 
 class shopee_xlnet_large(shopee_raw):
-    def __init__(self, data_root_dir, max_len=256, is_train=True):
+    def __init__(self, data_root_dir, max_len=512, is_train=True):
         super(shopee_xlnet_large, self).__init__(
-            data_root_dir, max_len=256, is_train=is_train)
+            data_root_dir, max_len=512, is_train=is_train)
 
     def get_tokenizer(self, pretrain=None):
         if pretrain == None:
@@ -95,27 +95,27 @@ class shopee_xlnet_large(shopee_raw):
 
 
 class shopee_bert_base(shopee_raw):
-    def __init__(self, data_root_dir, max_len=256, is_train=True):
+    def __init__(self, data_root_dir, max_len=512, is_train=True):
         super(shopee_bert_base, self).__init__(
-            data_root_dir, max_len=256, is_train=is_train)
+            data_root_dir, max_len=512, is_train=is_train)
 
     def get_tokenizer(self, pretrain=None):
         return transformers.BertTokenizer.from_pretrained('bert-base-uncased', max_len=512)
 
 
 class shopee_bert_large(shopee_raw):
-    def __init__(self, data_root_dir, max_len=256, is_train=True):
+    def __init__(self, data_root_dir, max_len=512, is_train=True):
         super(shopee_bert_large, self).__init__(
-            data_root_dir, max_len=256, is_train=is_train)
+            data_root_dir, max_len=512, is_train=is_train)
 
     def get_tokenizer(self, pretrain=None):
-        return transformers.BertTokenizer.from_pretrained('./tokenizer30000/bert', max_len=256)
+        return transformers.BertTokenizer.from_pretrained('./tokenizer30000/bert', max_len=512)
 
 
 class shopee_bert_multi(shopee_raw):
-    def __init__(self, data_root_dir, max_len=256, is_train=True):
+    def __init__(self, data_root_dir, max_len=512, is_train=True):
         super(shopee_bert_multi, self).__init__(
-            data_root_dir, max_len=256, is_train=is_train)
+            data_root_dir, max_len=512, is_train=is_train)
 
     def get_tokenizer(self, pretrain=None):
         return transformers.BertTokenizer.from_pretrained('./tokenizer30000/bert')

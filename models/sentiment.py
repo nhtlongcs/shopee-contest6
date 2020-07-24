@@ -95,7 +95,6 @@ class bert_base(nn.Module):
         super().__init__()
         # config baseline
         HIDDEN_DIM = 256
-        OUTPUT_DIM = 1
         N_LAYERS = 2
         BIDIRECTIONAL = True
         DROPOUT = 0.25
@@ -106,33 +105,36 @@ class bert_base(nn.Module):
         self.feature_dim = self.bert.config.hidden_size
 
         self.classifier = nn.Sequential(
-            nn.Linear(
-                HIDDEN_DIM * 2 if BIDIRECTIONAL else HIDDEN_DIM, self.nclasses)
+            nn.Linear(self.feature_dim, self.nclasses)
         )
-        self.rnn = nn.GRU(self.feature_dim,
-                          HIDDEN_DIM,
-                          num_layers=N_LAYERS,
-                          bidirectional=BIDIRECTIONAL,
-                          batch_first=True,
-                          dropout=0 if N_LAYERS < 2 else DROPOUT)
+        # self.classifier = nn.Sequential(
+        #     nn.Linear(
+        #         HIDDEN_DIM * 2 if BIDIRECTIONAL else HIDDEN_DIM, self.nclasses)
+        # )
+        #
+        # self.rnn = nn.GRU(self.feature_dim,
+        #                   HIDDEN_DIM,
+        #                   num_layers=N_LAYERS,
+        #                   bidirectional=BIDIRECTIONAL,
+        #                   batch_first=True,
+        #                   dropout=0 if N_LAYERS < 2 else DROPOUT)
 
-        self.dropout = nn.Dropout(DROPOUT)
+        # self.dropout = nn.Dropout(DROPOUT)
 
     def forward(self, input_ids, attention_mask):
         outputs = self.bert(
             input_ids=input_ids,
             attention_mask=attention_mask
         )
-        embedded = outputs[0]
+        embedded = outputs[1]
+        # _, hidden = self.rnn(embedded)
 
-        _, hidden = self.rnn(embedded)
-
-        if self.rnn.bidirectional:
-            hidden = self.dropout(
-                torch.cat((hidden[-2, :, :], hidden[-1, :, :]), dim=1))
-        else:
-            hidden = self.dropout(hidden[-1, :, :])
-        logits = self.classifier(hidden)
+        # if self.rnn.bidirectional:
+        #     hidden = self.dropout(
+        #         torch.cat((hidden[-2, :, :], hidden[-1, :, :]), dim=1))
+        # else:
+        #     hidden = self.dropout(hidden[-1, :, :])
+        logits = self.classifier(embedded)
         return logits
 
     def freeze(self):
