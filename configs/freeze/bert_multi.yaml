@@ -31,7 +31,7 @@ dataset:
     train:
         name: shopee_bert_multi
         args:
-            data_root_dir:      ./data/clean/full/         
+            data_root_dir:      ./data/clean/split/         
             is_train:           True  
         loader:
             name: shopee_loader
@@ -41,7 +41,7 @@ dataset:
     val:
         name: shopee_bert_multi
         args:
-            data_root_dir:      ./data/clean/full/          
+            data_root_dir:      ./data/clean/split/          
             is_train:           False  
         loader:
             name: shopee_loader

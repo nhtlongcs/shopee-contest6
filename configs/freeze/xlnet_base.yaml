@@ -31,22 +31,22 @@ dataset:
     train:
         name: shopee_xlnet_base
         args:
-            data_root_dir:      ./data/clean/full/         
+            data_root_dir:      ./data/clean/split/         
             is_train:           True  
         loader:
             name: shopee_loader
             args:
-                batch_size:     2
+                batch_size:     32
                 shuffle:        True
     val:
         name: shopee_xlnet_base
         args:
-            data_root_dir:      ./data/clean/full/          
+            data_root_dir:      ./data/clean/split/          
             is_train:           False  
         loader:
             name: shopee_loader
             args:
-                batch_size:     2
+                batch_size:     32
 trainer: 
     nepochs: 50
     cp_dir: ./cp

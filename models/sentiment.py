@@ -23,6 +23,7 @@ class ClassiferBlockV1(nn.Module):
         )
 
     def forward(self, x):
+        print(x.shape)
         embeds, _ = self.lstm(x)
         avg_pool = torch.mean(embeds, 1)
         res = self.cls(avg_pool)
@@ -102,7 +103,7 @@ class xlnet_large(nn.Module):
             input_ids=input_ids,
             attention_mask=attention_mask
         )
-        embedded = outputs[1]
+        embedded = outputs[0]
         logits = self.classifier(embedded)
         return logits
 
@@ -157,7 +158,7 @@ class bert_large(nn.Module):
             input_ids=input_ids,
             attention_mask=attention_mask
         )
-        embedded = outputs[1]
+        embedded = outputs[0]
         logits = self.classifier(embedded)
         return logits
 
@@ -185,7 +186,7 @@ class bert_multi(nn.Module):
             input_ids=input_ids,
             attention_mask=attention_mask
         )
-        embedded = outputs[1]
+        embedded = outputs[0]
         logits = self.classifier(embedded)
         return logits
 
