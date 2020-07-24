@@ -1,17 +1,18 @@
-id: 1
+id: 3
 pretrained: Null
 model:
-    name:                       baseline_sentiment_bert
+    name:                       bert_multi
     args:
         nclasses:               5
-        freeze:                 False
+        freeze:                 True
 optimizer:
     name:                       Adam
     args:
-        lr:                     0.01
+        lr:                     0.00001
 loss:
-    name:                       SmoothedCrossEntropy
+    name:                       CrossEntropyLoss
     args:
+        ignore_index:           5
 metric:
     -   name:                   Accuracy
         args:                   Null
@@ -28,26 +29,26 @@ scheduler:
         verbose:                  True         
 dataset:
     train:
-        name: shopee_raw
+        name: shopee_bert_multi
         args:
-            data_root_dir:      /content/shopee-contest6/data/clean/split/         
+            data_root_dir:      ./data/clean/full/         
             is_train:           True  
         loader:
             name: shopee_loader
             args:
-                batch_size:     64
+                batch_size:     32
                 shuffle:        True
     val:
-        name: shopee_raw
+        name: shopee_bert_multi
         args:
-            data_root_dir:      /content/shopee-contest6/data/clean/split/          
+            data_root_dir:      ./data/clean/full/          
             is_train:           False  
         loader:
             name: shopee_loader
             args:
-                batch_size:     64
+                batch_size:     32
 trainer: 
-    nepochs: 10
-    cp_dir: /content/gdrive/My Drive/Shopee competition/contest6/cp
+    nepochs: 50
+    cp_dir: ./cp
     val_step: 1
     log_step: 1

@@ -1,14 +1,14 @@
 id: 3
 pretrained: Null
 model:
-    name:                       xlnet_base
+    name:                       bert_base
     args:
         nclasses:               5
-        freeze:                 False
+        freeze:                 True
 optimizer:
     name:                       Adam
     args:
-        lr:                     0.01
+        lr:                     0.00001
 loss:
     name:                       CrossEntropyLoss
     args:
@@ -29,26 +29,26 @@ scheduler:
         verbose:                  True         
 dataset:
     train:
-        name: shopee_xlnet_base
+        name: shopee_bert_base
         args:
             data_root_dir:      ./data/clean/full/         
             is_train:           True  
         loader:
             name: shopee_loader
             args:
-                batch_size:     32
+                batch_size:     2
                 shuffle:        True
     val:
-        name: shopee_xlnet_base
+        name: shopee_bert_base
         args:
             data_root_dir:      ./data/clean/full/          
             is_train:           False  
         loader:
             name: shopee_loader
             args:
-                batch_size:     32
+                batch_size:     2
 trainer: 
-    nepochs: 10
+    nepochs: 50
     cp_dir: ./cp
     val_step: 1
     log_step: 1

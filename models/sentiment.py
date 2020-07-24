@@ -5,6 +5,19 @@ import transformers
 from tqdm import tqdm
 
 
+class ClassiferBlockV1(nn.Module):
+
+    def __init__(self, feature_dim, out_dim):
+        super().__init__()
+        self.model = nn.Sequential(
+            nn.Linear(feature_dim, 512),
+            nn.Linear(512, out_dim)
+        )
+
+    def forward(self, x):
+        return self.model(x)
+
+
 class baseline_sentiment_bert(nn.Module):
     """Baseline model"""
 
@@ -16,14 +29,7 @@ class baseline_sentiment_bert(nn.Module):
             self.freeze()
         self.feature_dim = self.bert.config.hidden_size
 
-        self.classifier = nn.Sequential(
-            nn.Linear(self.feature_dim, 512),
-            nn.Dropout(0.2),
-            nn.BatchNorm1d(512),
-            nn.ReLU(),
-            nn.Dropout(0.2),
-            nn.Linear(512, nclasses)
-        )
+        self.classifier = ClassiferBlockV1(self.feature_dim, nclasses)
 
     def forward(self, input_ids, attention_mask):
 
@@ -46,21 +52,24 @@ class xlnet_base(nn.Module):
     def __init__(self, nclasses, freeze=False):
         super().__init__()
         self.nclasses = nclasses
-        self.xlnet = transformers.XLNetForSequenceClassification.from_pretrained(
-            "xlnet-base-cased", num_labels=nclasses)
+        self.xlnet = transformers.XLNetModel.from_pretrained(
+            "xlnet-base-cased")
         if freeze:
             self.freeze()
+        self.feature_dim = self.xlnet.config.hidden_size
+        self.classifier = ClassiferBlockV1(self.feature_dim, nclasses)
 
     def forward(self, input_ids, attention_mask):
         outputs = self.xlnet(
             input_ids=input_ids,
             attention_mask=attention_mask
         )
-        logits = outputs[0]
+        embedded = outputs[1]
+        logits = self.classifier(embedded)
         return logits
 
     def freeze(self):
-        for param in self.xlnet.transformer.parameters():
+        for param in self.xlnet.parameters():
             param.requires_grad = False
 
 
@@ -70,21 +79,24 @@ class xlnet_large(nn.Module):
     def __init__(self, nclasses, freeze=False):
         super().__init__()
         self.nclasses = nclasses
-        self.xlnet = transformers.XLNetForSequenceClassification.from_pretrained(
-            "xlnet-large-cased", num_labels=nclasses)
+        self.xlnet = transformers.XLNetModel.from_pretrained(
+            "xlnet-large-cased")
         if freeze:
             self.freeze()
+        self.feature_dim = self.xlnet.config.hidden_size
+        self.classifier = ClassiferBlockV1(self.feature_dim, nclasses)
 
     def forward(self, input_ids, attention_mask):
         outputs = self.xlnet(
             input_ids=input_ids,
             attention_mask=attention_mask
         )
-        logits = outputs[0]
+        embedded = outputs[1]
+        logits = self.classifier(embedded)
         return logits
 
     def freeze(self):
-        for param in self.model.transformer.parameters():
+        for param in self.model.parameters():
             param.requires_grad = False
 
 
@@ -94,32 +106,12 @@ class bert_base(nn.Module):
     def __init__(self, nclasses, freeze=False):
         super().__init__()
         # config baseline
-        HIDDEN_DIM = 256
-        N_LAYERS = 2
-        BIDIRECTIONAL = True
-        DROPOUT = 0.25
         self.nclasses = nclasses
         self.bert = transformers.BertModel.from_pretrained("bert-base-uncased")
         if freeze:
             self.freeze()
         self.feature_dim = self.bert.config.hidden_size
-
-        self.classifier = nn.Sequential(
-            nn.Linear(self.feature_dim, self.nclasses)
-        )
-        # self.classifier = nn.Sequential(
-        #     nn.Linear(
-        #         HIDDEN_DIM * 2 if BIDIRECTIONAL else HIDDEN_DIM, self.nclasses)
-        # )
-        #
-        # self.rnn = nn.GRU(self.feature_dim,
-        #                   HIDDEN_DIM,
-        #                   num_layers=N_LAYERS,
-        #                   bidirectional=BIDIRECTIONAL,
-        #                   batch_first=True,
-        #                   dropout=0 if N_LAYERS < 2 else DROPOUT)
-
-        # self.dropout = nn.Dropout(DROPOUT)
+        self.classifier = ClassiferBlockV1(self.feature_dim, nclasses)
 
     def forward(self, input_ids, attention_mask):
         outputs = self.bert(
@@ -127,13 +119,6 @@ class bert_base(nn.Module):
             attention_mask=attention_mask
         )
         embedded = outputs[1]
-        # _, hidden = self.rnn(embedded)
-
-        # if self.rnn.bidirectional:
-        #     hidden = self.dropout(
-        #         torch.cat((hidden[-2, :, :], hidden[-1, :, :]), dim=1))
-        # else:
-        #     hidden = self.dropout(hidden[-1, :, :])
         logits = self.classifier(embedded)
         return logits
 
@@ -148,21 +133,24 @@ class bert_large(nn.Module):
     def __init__(self, nclasses, freeze=False):
         super().__init__()
         self.nclasses = nclasses
-        self.bert = transformers.BertForSequenceClassification.from_pretrained(
-            "bert-large-uncased", num_labels=nclasses)
+        self.bert = transformers.BertModel.from_pretrained(
+            "bert-large-uncased")
         if freeze:
             self.freeze()
+        self.feature_dim = self.bert.config.hidden_size
+        self.classifier = ClassiferBlockV1(self.feature_dim, nclasses)
 
     def forward(self, input_ids, attention_mask):
         outputs = self.bert(
             input_ids=input_ids,
             attention_mask=attention_mask
         )
-        logits = outputs[0]
+        embedded = outputs[1]
+        logits = self.classifier(embedded)
         return logits
 
     def freeze(self):
-        for param in self.bert.bert.parameters():
+        for param in self.bert.parameters():
             param.requires_grad = False
 
 
@@ -172,21 +160,25 @@ class bert_multi(nn.Module):
     def __init__(self, nclasses, freeze=False):
         super().__init__()
         self.nclasses = nclasses
-        self.bert = transformers.BertForSequenceClassification.from_pretrained(
-            "bert-base-multilingual-uncased", num_labels=nclasses)
+        self.bert = transformers.BertModel.from_pretrained(
+            "bert-base-multilingual-uncased")
         if freeze:
             self.freeze()
+
+        self.feature_dim = self.bert.config.hidden_size
+        self.classifier = ClassiferBlockV1(self.feature_dim, nclasses)
 
     def forward(self, input_ids, attention_mask):
         outputs = self.bert(
             input_ids=input_ids,
             attention_mask=attention_mask
         )
-        logits = outputs[0]
+        embedded = outputs[1]
+        logits = self.classifier(embedded)
         return logits
 
     def freeze(self):
-        for param in self.bert.bert.parameters():
+        for param in self.bert.parameters():
             param.requires_grad = False
 
 

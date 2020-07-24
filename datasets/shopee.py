@@ -80,7 +80,7 @@ class shopee_xlnet_base(shopee_raw):
             data_root_dir, max_len=512, is_train=is_train)
 
     def get_tokenizer(self, pretrain=None):
-        return transformers.XLNetTokenizer.from_pretrained('./tokenizer30000/xlnet')
+        return transformers.XLNetTokenizer.from_pretrained('xlnet-base-cased')
 
 
 class shopee_xlnet_large(shopee_raw):
@@ -91,7 +91,7 @@ class shopee_xlnet_large(shopee_raw):
     def get_tokenizer(self, pretrain=None):
         if pretrain == None:
             return transformers.XLNetTokenizer
-        return transformers.XLNetTokenizer.from_pretrained('./tokenizer30000/xlnet')
+        return transformers.XLNetTokenizer.from_pretrained('xlnet-large-cased')
 
 
 class shopee_bert_base(shopee_raw):
@@ -109,7 +109,7 @@ class shopee_bert_large(shopee_raw):
             data_root_dir, max_len=512, is_train=is_train)
 
     def get_tokenizer(self, pretrain=None):
-        return transformers.BertTokenizer.from_pretrained('./tokenizer30000/bert', max_len=512)
+        return transformers.BertTokenizer.from_pretrained('bert-large-uncased', max_len=512)
 
 
 class shopee_bert_multi(shopee_raw):
@@ -118,7 +118,7 @@ class shopee_bert_multi(shopee_raw):
             data_root_dir, max_len=512, is_train=is_train)
 
     def get_tokenizer(self, pretrain=None):
-        return transformers.BertTokenizer.from_pretrained('./tokenizer30000/bert')
+        return transformers.BertTokenizer.from_pretrained('bert-base-multilingual-uncased')
 
 
 # test
