@@ -23,7 +23,6 @@ class ClassiferBlockV1(nn.Module):
         )
 
     def forward(self, x):
-        print(x.shape)
         embeds, _ = self.lstm(x)
         avg_pool = torch.mean(embeds, 1)
         res = self.cls(avg_pool)
