@@ -59,7 +59,6 @@ def train(config):
     # Train from pretrained if it is not None
     if pretrained is not None:
         model.load_state_dict(pretrained['model_state_dict'])
-    print(model)
     # 3: Define loss
     set_seed()
     criterion = get_instance(config['loss']).to(device)

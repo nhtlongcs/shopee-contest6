@@ -7,13 +7,15 @@ import argparse
 import warnings
 import torch.nn as nn
 import pytorch_lightning as pl
-
+import torch_xla.core.xla_model as xm
+import pandas as pd
 from torch.utils import data
 from torch.utils.data import DataLoader
-
+from tqdm import tqdm
 from pytorch_lightning.trainer import seed_everything
 from pytorch_lightning.callbacks.model_checkpoint import ModelCheckpoint
-
+from datasets import *
+from dataloaders import *
 from torchsummary import summary
 from utils.getter import get_instance
 warnings.filterwarnings('ignore', category=FutureWarning)
@@ -70,14 +72,38 @@ class pipeline(pl.LightningModule):
         return optimizer
 
 
-def predict(config, x):
-    sentiment_pipeline = pipeline(config)
-    pretrained_model = sentiment_pipeline.load_from_checkpoint(
-        checkpoint_path='')
-    pretrained_model.eval()
-    pretrained_model.freeze()
-    return pretrained_model(x)
-    cp_dir = config['trainer']['cp_dir']
+def predict(config):
+
+    device = xm.xla_device()
+
+    test_dataset = shopee_bert_base('./data/clean/', infer=True)
+    test_dataloader = DataLoader(
+        test_dataset, batch_size=64, shuffle=False, drop_last=False)
+    model = pipeline(config)
+    checkpoint_path = '/content/gdrive/My Drive/Shopee competition/contest6/baseline_bert_base.ckpt'
+    checkpoint = torch.load(
+        checkpoint_path, map_location=lambda storage, loc: storage)
+    model.load_state_dict(checkpoint['state_dict'])
+
+    model.to(device)
+    model.eval()
+    model.freeze()
+    res = torch.Tensor().long().cpu()
+    for x in tqdm(test_dataloader):
+        inps = x['input_ids'].to(device)
+        mask = x['attention_mask'].to(device)
+        tmp = model(inps, mask)
+
+        tmp = tmp.argmax(-1).cpu()
+        res = torch.cat((res, tmp), 0)
+    length = res.shape[0]
+    res = res + torch.Tensor([1]*length).long()
+
+    res_csv = res.tolist()
+    idx = [x+1 for x in range(length)]
+    df = pd.DataFrame(zip(idx, res_csv), columns=['review_id', 'rating'])
+    print(length)
+    df.to_csv('submit.csv', index=False)
 
 
 if __name__ == '__main__':
@@ -96,4 +122,4 @@ if __name__ == '__main__':
     config['gpus'] = args.gpus
     config['debug'] = args.debug
     config['trainer']['cp_dir'] = args.cp_dir
-    train(config)
+    predict(config)

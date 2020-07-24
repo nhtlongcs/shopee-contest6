@@ -9,13 +9,24 @@ class ClassiferBlockV1(nn.Module):
 
     def __init__(self, feature_dim, out_dim):
         super().__init__()
-        self.model = nn.Sequential(
-            nn.Linear(feature_dim, 512),
-            nn.Linear(512, out_dim)
+        hidden_dim = 512
+        self.lstm = nn.LSTM(feature_dim,
+                            hidden_dim,
+                            num_layers=2,
+                            bidirectional=True,
+                            batch_first=True)
+
+        self.cls = nn.Sequential(
+            nn.Linear(hidden_dim*2, hidden_dim),
+            nn.Linear(hidden_dim, out_dim)
+
         )
 
     def forward(self, x):
-        return self.model(x)
+        embeds, _ = self.lstm(x)
+        avg_pool = torch.mean(embeds, 1)
+        res = self.cls(avg_pool)
+        return res
 
 
 class baseline_sentiment_bert(nn.Module):
@@ -64,7 +75,7 @@ class xlnet_base(nn.Module):
             input_ids=input_ids,
             attention_mask=attention_mask
         )
-        embedded = outputs[1]
+        embedded = outputs[0]
         logits = self.classifier(embedded)
         return logits
 
@@ -118,7 +129,8 @@ class bert_base(nn.Module):
             input_ids=input_ids,
             attention_mask=attention_mask
         )
-        embedded = outputs[1]
+        embedded = outputs[0]
+
         logits = self.classifier(embedded)
         return logits
 
