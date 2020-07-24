@@ -76,11 +76,10 @@ def train(config):
     cp_dir = os.path.join(
         cp_dir, config['model']['name']) + str(config.get('id', 'None'))
     checkpoint_callback = ModelCheckpoint(
-        filepath=cp_dir + '/{epoch}-{train_loss:.3f}-{val_acc:.2f}')
+        filepath=cp_dir + '/{epoch}-{train_loss:.3f}-{val_acc:.2f}', save_top_k=7)
 
     trainer = pl.Trainer(
         max_epochs=config['trainer']['nepochs'],
-        save_top_k=7,
         num_tpu_cores=8,
         progress_bar_refresh_rate=20,
         gpus=(1 if torch.cuda.is_available() else 0),
