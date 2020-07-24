@@ -93,26 +93,50 @@ class bert_base(nn.Module):
 
     def __init__(self, nclasses, freeze=False):
         super().__init__()
+        # config baseline
+        HIDDEN_DIM = 256
+        OUTPUT_DIM = 1
+        N_LAYERS = 2
+        BIDIRECTIONAL = True
+        DROPOUT = 0.25
         self.nclasses = nclasses
-        self.config = transformers.BertConfig(
-            vocab_size=50_000
-
-        )
-        self.bert = transformers.BertForSequenceClassification.from_pretrained(
-            "bert-base-uncased", num_labels=nclasses)
+        self.bert = transformers.BertModel.from_pretrained("bert-base-uncased")
         if freeze:
             self.freeze()
+        self.feature_dim = self.bert.config.hidden_size
+
+        self.classifier = nn.Sequential(
+            nn.Linear(
+                HIDDEN_DIM * 2 if BIDIRECTIONAL else HIDDEN_DIM, self.nclasses)
+        )
+        self.rnn = nn.GRU(self.feature_dim,
+                          HIDDEN_DIM,
+                          num_layers=N_LAYERS,
+                          bidirectional=BIDIRECTIONAL,
+                          batch_first=True,
+                          dropout=0 if N_LAYERS < 2 else DROPOUT)
+
+        self.dropout = nn.Dropout(DROPOUT)
 
     def forward(self, input_ids, attention_mask):
         outputs = self.bert(
             input_ids=input_ids,
             attention_mask=attention_mask
         )
-        logits = outputs[0]
+        embedded = outputs[0]
+
+        _, hidden = self.rnn(embedded)
+
+        if self.rnn.bidirectional:
+            hidden = self.dropout(
+                torch.cat((hidden[-2, :, :], hidden[-1, :, :]), dim=1))
+        else:
+            hidden = self.dropout(hidden[-1, :, :])
+        logits = self.classifier(hidden)
         return logits
 
     def freeze(self):
-        for param in self.bert.bert.parameters():
+        for param in self.bert.parameters():
             param.requires_grad = False
 
 

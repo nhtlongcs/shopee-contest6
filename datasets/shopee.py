@@ -100,7 +100,7 @@ class shopee_bert_base(shopee_raw):
             data_root_dir, max_len=256, is_train=is_train)
 
     def get_tokenizer(self, pretrain=None):
-        return transformers.BertTokenizer.from_pretrained('./tokenizer30000/bert', max_len=256)
+        return transformers.BertTokenizer.from_pretrained('bert-base-uncased', max_len=512)
 
 
 class shopee_bert_large(shopee_raw):
@@ -123,7 +123,7 @@ class shopee_bert_multi(shopee_raw):
 
 # test
 if __name__ == "__main__":
-    dataset = shopee_dummy(
+    dataset = shopee_bert_base(
         '/home/ken/shopee_ws/sentiment/shopee-contest6/data/clean/full/')
     # print(dataset[2]['review_text'])
     # print(dataset[2]['input_ids'])
