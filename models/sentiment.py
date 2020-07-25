@@ -3,6 +3,33 @@ import torch.nn as nn
 import torch.nn.functional as F
 import transformers
 from tqdm import tqdm
+transformers.RobertaForSequenceClassification
+
+
+# class ClassiferBlockV1(nn.Module):
+
+#     def __init__(self, feature_dim, out_dim):
+#         super().__init__()
+#         hidden_dim = 128
+#         self.lstm = nn.LSTM(feature_dim,
+#                             hidden_dim,
+#                             num_layers=1,
+#                             bidirectional=True,
+#                             batch_first=True)
+
+#         self.cls = nn.Sequential(
+#             nn.Linear(hidden_dim*2, hidden_dim),
+#             nn.ReLU(),
+#             nn.Linear(hidden_dim, hidden_dim),
+#             nn.ReLU(),
+#             nn.Linear(hidden_dim, out_dim)
+#         )
+
+#     def forward(self, x):
+#         embeds, _ = self.lstm(x[0])
+#         avg_pool = torch.mean(embeds, 1)
+#         res = self.cls(avg_pool)
+#         return res
 
 
 class ClassiferBlockV1(nn.Module):
@@ -10,20 +37,29 @@ class ClassiferBlockV1(nn.Module):
     def __init__(self, feature_dim, out_dim):
         super().__init__()
         hidden_dim = 128
-        self.lstm = nn.LSTM(feature_dim,
-                            hidden_dim,
-                            num_layers=2,
-                            bidirectional=True,
-                            batch_first=True)
+        self.lstm1 = nn.LSTM(feature_dim,
+                             hidden_dim,
+                             num_layers=1,
+                             bidirectional=False,
+                             batch_first=True)
+
+        self.lstm2 = nn.LSTM(hidden_dim,
+                             hidden_dim,
+                             num_layers=1,
+                             bidirectional=True,
+                             batch_first=True)
 
         self.cls = nn.Sequential(
             nn.Linear(hidden_dim*2, hidden_dim),
+            nn.ReLU(),
+            nn.Linear(hidden_dim, hidden_dim),
             nn.ReLU(),
             nn.Linear(hidden_dim, out_dim)
         )
 
     def forward(self, x):
-        embeds, _ = self.lstm(x[0])
+        embeds, _ = self.lstm1(x[0])
+        embeds, _ = self.lstm2(embeds)
         avg_pool = torch.mean(embeds, 1)
         res = self.cls(avg_pool)
         return res

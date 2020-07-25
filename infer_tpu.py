@@ -80,7 +80,8 @@ def predict(config):
     test_dataloader = DataLoader(
         test_dataset, batch_size=64, shuffle=False, drop_last=False)
     model = pipeline(config)
-    checkpoint_path = '/content/gdrive/My Drive/Shopee competition/contest6/baseline_bert_base.ckpt'
+    checkpoint_path = '/content/gdrive/My Drive/Shopee competition/contest6/bert_distil5val.ckpt'
+    print('Loading model ...')
     checkpoint = torch.load(
         checkpoint_path, map_location=lambda storage, loc: storage)
     model.load_state_dict(checkpoint['state_dict'])
@@ -88,6 +89,7 @@ def predict(config):
     model.to(device)
     model.eval()
     model.freeze()
+    print('generating submission ... ')
     res = torch.Tensor().long().cpu()
     for x in tqdm(test_dataloader):
         inps = x['input_ids'].to(device)
