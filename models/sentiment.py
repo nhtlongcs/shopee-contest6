@@ -194,6 +194,34 @@ class bert_multi(nn.Module):
             param.requires_grad = False
 
 
+class bert_distil(nn.Module):
+    """Baseline model"""
+
+    def __init__(self, nclasses, freeze=False):
+        super().__init__()
+        self.nclasses = nclasses
+        self.bert = transformers.DistilBertModel.from_pretrained(
+            "distilbert-base-uncased")
+        if freeze:
+            self.freeze()
+
+        self.feature_dim = self.bert.config.hidden_size
+        self.classifier = ClassiferBlockV1(self.feature_dim, nclasses)
+
+    def forward(self, input_ids, attention_mask):
+        outputs = self.bert(
+            input_ids=input_ids,
+            attention_mask=attention_mask
+        )
+        embedded = outputs
+        logits = self.classifier(embedded)
+        return logits
+
+    def freeze(self):
+        for param in self.bert.parameters():
+            param.requires_grad = False
+
+
 if __name__ == "__main__":
     dev = torch.device('cpu')
     net = xlnet_sentiment(5).to(dev)
