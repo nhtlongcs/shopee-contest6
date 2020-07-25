@@ -5,39 +5,11 @@ import transformers
 from tqdm import tqdm
 
 
-# class ClassiferBlockV1(nn.Module):
-
-#     def __init__(self, feature_dim, out_dim):
-#         super().__init__()
-#         hidden_dim = 512
-#         self.lstm = nn.LSTM(feature_dim,
-#                             hidden_dim,
-#                             num_layers=2,
-#                             bidirectional=True,
-#                             batch_first=True)
-
-#         self.cls = nn.Sequential(
-#             nn.Linear(feature_dim, hidden_dim),
-#             nn.ReLU(),
-#             nn.Linear(hidden_dim, hidden_dim),
-#             nn.ReLU(),
-#             nn.Linear(hidden_dim, out_dim)
-
-#         )
-
-#     def forward(self, x):
-#         avg_pool = x[0]
-#         # embeds, _ = self.lstm(x)
-#         # avg_pool = torch.mean(embeds, 1)
-#         res = self.cls(avg_pool)
-#         return res
-
-
 class ClassiferBlockV1(nn.Module):
 
     def __init__(self, feature_dim, out_dim):
         super().__init__()
-        hidden_dim = 512
+        hidden_dim = 128
         self.lstm = nn.LSTM(feature_dim,
                             hidden_dim,
                             num_layers=2,
