@@ -103,7 +103,7 @@ if __name__ == "__main__":
         '--config', default='configs/train/baseline_local_nhtlong.yaml')
     parser.add_argument('--gpus', default=0)
     parser.add_argument('--debug', default=False)
-    parser.add_argument('--cp_dir', default='./aaaa')
+    parser.add_argument('--cp_dir', default='./cp')
 
     args = parser.parse_args()
 

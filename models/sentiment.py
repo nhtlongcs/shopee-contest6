@@ -5,6 +5,34 @@ import transformers
 from tqdm import tqdm
 
 
+# class ClassiferBlockV1(nn.Module):
+
+#     def __init__(self, feature_dim, out_dim):
+#         super().__init__()
+#         hidden_dim = 512
+#         self.lstm = nn.LSTM(feature_dim,
+#                             hidden_dim,
+#                             num_layers=2,
+#                             bidirectional=True,
+#                             batch_first=True)
+
+#         self.cls = nn.Sequential(
+#             nn.Linear(feature_dim, hidden_dim),
+#             nn.ReLU(),
+#             nn.Linear(hidden_dim, hidden_dim),
+#             nn.ReLU(),
+#             nn.Linear(hidden_dim, out_dim)
+
+#         )
+
+#     def forward(self, x):
+#         avg_pool = x[0]
+#         # embeds, _ = self.lstm(x)
+#         # avg_pool = torch.mean(embeds, 1)
+#         res = self.cls(avg_pool)
+#         return res
+
+
 class ClassiferBlockV1(nn.Module):
 
     def __init__(self, feature_dim, out_dim):
@@ -18,12 +46,12 @@ class ClassiferBlockV1(nn.Module):
 
         self.cls = nn.Sequential(
             nn.Linear(hidden_dim*2, hidden_dim),
+            nn.ReLU(),
             nn.Linear(hidden_dim, out_dim)
-
         )
 
     def forward(self, x):
-        embeds, _ = self.lstm(x)
+        embeds, _ = self.lstm(x[0])
         avg_pool = torch.mean(embeds, 1)
         res = self.cls(avg_pool)
         return res
@@ -75,7 +103,7 @@ class xlnet_base(nn.Module):
             input_ids=input_ids,
             attention_mask=attention_mask
         )
-        embedded = outputs[0]
+        embedded = outputs
         logits = self.classifier(embedded)
         return logits
 
@@ -102,7 +130,7 @@ class xlnet_large(nn.Module):
             input_ids=input_ids,
             attention_mask=attention_mask
         )
-        embedded = outputs[0]
+        embedded = outputs
         logits = self.classifier(embedded)
         return logits
 
@@ -129,7 +157,7 @@ class bert_base(nn.Module):
             input_ids=input_ids,
             attention_mask=attention_mask
         )
-        embedded = outputs[0]
+        embedded = outputs
 
         logits = self.classifier(embedded)
         return logits
@@ -157,7 +185,7 @@ class bert_large(nn.Module):
             input_ids=input_ids,
             attention_mask=attention_mask
         )
-        embedded = outputs[0]
+        embedded = outputs
         logits = self.classifier(embedded)
         return logits
 
@@ -185,7 +213,7 @@ class bert_multi(nn.Module):
             input_ids=input_ids,
             attention_mask=attention_mask
         )
-        embedded = outputs[0]
+        embedded = outputs
         logits = self.classifier(embedded)
         return logits
 
