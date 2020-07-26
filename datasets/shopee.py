@@ -35,8 +35,6 @@ class shopee_raw(data.Dataset):
                 self.targets = list(pd.read_csv(csv_val_dir)['rating'])
 
             self.targets = list(map(int, self.targets))
-        print(self.reviews[:10])
-        print(self.targets[:10])
         self.tokenizer = self.get_tokenizer('bert-base-uncased')
         self.max_len = max_len
         # print(self.tokenizer.vocab)
