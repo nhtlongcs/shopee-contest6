@@ -142,6 +142,15 @@ class shopee_bert_distil(shopee_raw):
         return transformers.DistilBertTokenizer.from_pretrained('distilbert-base-uncased')
 
 
+class shopee_bert_mobile(shopee_raw):
+    def __init__(self, data_root_dir, max_len=200, is_train=True, infer=False):
+        super(shopee_bert_mobile, self).__init__(
+            data_root_dir, max_len=200, is_train=is_train, infer=infer)
+
+    def get_tokenizer(self, pretrain=None):
+        return transformers.MobileBertModel.from_pretrained('google/mobilebert-uncased')
+
+
 # test
 if __name__ == "__main__":
     dataset = shopee_bert_base(

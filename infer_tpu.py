@@ -75,12 +75,13 @@ class pipeline(pl.LightningModule):
 def predict(config):
 
     device = xm.xla_device()
-
-    test_dataset = shopee_bert_base('./data/clean/', infer=True)
+    config['dataset']['train']['args']['data_root_dir'] = './data/clean/'
+    config['dataset']['train']['args']['infer'] = True
+    test_dataset = get_instance(config['dataset']['train'])
     test_dataloader = DataLoader(
         test_dataset, batch_size=64, shuffle=False, drop_last=False)
     model = pipeline(config)
-    checkpoint_path = '/content/gdrive/My Drive/Shopee competition/contest6/bert_distil5val.ckpt'
+    checkpoint_path = config['trainer']['cp_dir']
     print('Loading model ...')
     checkpoint = torch.load(
         checkpoint_path, map_location=lambda storage, loc: storage)

@@ -37,32 +37,57 @@ class ClassiferBlockV1(nn.Module):
     def __init__(self, feature_dim, out_dim):
         super().__init__()
         hidden_dim = 128
-        self.lstm1 = nn.LSTM(feature_dim,
-                             hidden_dim,
-                             num_layers=1,
-                             bidirectional=False,
-                             batch_first=True)
 
-        self.lstm2 = nn.LSTM(hidden_dim,
+        self.lstm2 = nn.LSTM(out_dim,
                              hidden_dim,
                              num_layers=1,
                              bidirectional=True,
                              batch_first=True)
 
-        self.cls = nn.Sequential(
-            nn.Linear(hidden_dim*2, hidden_dim),
-            nn.ReLU(),
-            nn.Linear(hidden_dim, hidden_dim),
-            nn.ReLU(),
-            nn.Linear(hidden_dim, out_dim)
-        )
+        self.token_cls = nn.Linear(feature_dim, out_dim)
+        self.seq_cls = nn.Linear(hidden_dim * 2, out_dim)
 
     def forward(self, x):
+        seq_embed = x[0]
+        embeds = F.relu(self.token_cls(seq_embed))
         embeds, _ = self.lstm1(x[0])
         embeds, _ = self.lstm2(embeds)
+
         avg_pool = torch.mean(embeds, 1)
         res = self.cls(avg_pool)
         return res
+
+# class ClassiferBlockV1(nn.Module):
+
+#     def __init__(self, feature_dim, out_dim):
+#         super().__init__()
+#         hidden_dim = 128
+#         self.lstm1 = nn.LSTM(feature_dim,
+#                              hidden_dim,
+#                              num_layers=1,
+#                              bidirectional=False,
+#                              batch_first=True)
+
+#         self.lstm2 = nn.LSTM(hidden_dim,
+#                              hidden_dim,
+#                              num_layers=1,
+#                              bidirectional=True,
+#                              batch_first=True)
+
+#         self.cls = nn.Sequential(
+#             nn.Linear(hidden_dim*2, hidden_dim),
+#             nn.ReLU(),
+#             nn.Linear(hidden_dim, hidden_dim),
+#             nn.ReLU(),
+#             nn.Linear(hidden_dim, out_dim)
+#         )
+
+#     def forward(self, x):
+#         embeds, _ = self.lstm1(x[0])
+#         embeds, _ = self.lstm2(embeds)
+#         avg_pool = torch.mean(embeds, 1)
+#         res = self.cls(avg_pool)
+#         return res
 
 
 class baseline_sentiment_bert(nn.Module):
@@ -238,6 +263,34 @@ class bert_distil(nn.Module):
         self.nclasses = nclasses
         self.bert = transformers.DistilBertModel.from_pretrained(
             "distilbert-base-uncased")
+        if freeze:
+            self.freeze()
+
+        self.feature_dim = self.bert.config.hidden_size
+        self.classifier = ClassiferBlockV1(self.feature_dim, nclasses)
+
+    def forward(self, input_ids, attention_mask):
+        outputs = self.bert(
+            input_ids=input_ids,
+            attention_mask=attention_mask
+        )
+        embedded = outputs
+        logits = self.classifier(embedded)
+        return logits
+
+    def freeze(self):
+        for param in self.bert.parameters():
+            param.requires_grad = False
+
+
+class bert_mobile(nn.Module):
+    """Baseline model"""
+
+    def __init__(self, nclasses, freeze=False):
+        super().__init__()
+        self.nclasses = nclasses
+        self.bert = transformers.MobileBertModel.from_pretrained(
+            "google/mobilebert-uncased")
         if freeze:
             self.freeze()
 
