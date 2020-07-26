@@ -80,7 +80,7 @@ class ClassiferBlockV1(nn.Module):
             nn.ReLU(),
             nn.Linear(hidden_dim, hidden_dim),
             nn.ReLU(),
-            n.Dropout(p=0.15),
+            nn.Dropout(p=0.15),
             nn.Linear(hidden_dim, out_dim)
         )
 
