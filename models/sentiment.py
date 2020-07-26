@@ -74,11 +74,13 @@ class ClassiferBlockV1(nn.Module):
                              bidirectional=True,
                              batch_first=True)
 
+        self.drop = nn.Dropout(p=0.15)
         self.cls = nn.Sequential(
             nn.Linear(hidden_dim*2, hidden_dim),
             nn.ReLU(),
             nn.Linear(hidden_dim, hidden_dim),
             nn.ReLU(),
+            n.Dropout(p=0.15),
             nn.Linear(hidden_dim, out_dim)
         )
 

@@ -2,17 +2,17 @@ import csv
 import argparse
 import random
 
-TRAIN = 'train_train'
-VAL = 'train_val'
+TRAIN = 'train'
+VAL = 'val'
 
 parser = argparse.ArgumentParser()
-parser.add_argument('-csv', type=str, default='/home/ken/shopee_ws/sentiment/clean_data/train.csv',
+parser.add_argument('-csv', type=str, default='/home/ken/shopee_ws/sentiment/shopee-contest6/data/clean/full/train.csv',
                     help='path to csv file')
 parser.add_argument('-ratio', type=float, default=0.9,
                     help='ratio of the train set (default: 0.9)')
 parser.add_argument('-seed', type=int, default=1234,
                     help='random seed (default: 1234)')
-parser.add_argument('-out', type=str, default='.',
+parser.add_argument('-out', type=str, default='/home/ken/shopee_ws/sentiment/shopee-contest6/data/clean/split/',
                     help='directory to save the splits (default: .)')
 
 args = parser.parse_args()
@@ -44,7 +44,7 @@ for cls_id, cls_list in d.items():
 
 # Save split
 for split, classes in splits.items():
-    out = [['reivew', 'rating']]
+    out = [['review', 'rating']]
     out.extend([
         [fn, cl]
         for cl, fns in classes.items()

@@ -35,6 +35,8 @@ class shopee_raw(data.Dataset):
                 self.targets = list(pd.read_csv(csv_val_dir)['rating'])
 
             self.targets = list(map(int, self.targets))
+        print(self.reviews[:10])
+        print(self.targets[:10])
         self.tokenizer = self.get_tokenizer('bert-base-uncased')
         self.max_len = max_len
         # print(self.tokenizer.vocab)
@@ -172,8 +174,9 @@ class shopee_bert_roberta(shopee_raw):
 # test
 if __name__ == "__main__":
     dataset = shopee_bert_base(
-        '/home/ken/shopee_ws/sentiment/shopee-contest6/data/clean/full/')
-    # print(dataset[2]['review_text'])
-    # print(dataset[2]['input_ids'])
-    # print(dataset[2]['attention_mask'])
-    # print(dataset[2]['targets'])
+        '/home/ken/shopee_ws/sentiment/shopee-contest6/data/clean/split/', is_train=False)
+    print(dataset[0]['review_text'])
+    # a = []
+    # for i in range(10):
+    #     a.append(dataset[i]['targets'])
+    # print(a)
