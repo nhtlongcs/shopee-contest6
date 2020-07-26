@@ -50,11 +50,10 @@ class ClassiferBlockV1(nn.Module):
     def forward(self, x):
         seq_embed = x[0]
         embeds = F.relu(self.token_cls(seq_embed))
-        embeds, _ = self.lstm1(x[0])
-        embeds, _ = self.lstm2(embeds)
+        embeds, _ = self.lstm(embeds)
 
         avg_pool = torch.mean(embeds, 1)
-        res = self.cls(avg_pool)
+        res = self.seq_cls(avg_pool)
         return res
 
 # class ClassiferBlockV1(nn.Module):
