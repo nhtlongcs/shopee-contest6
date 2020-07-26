@@ -148,7 +148,7 @@ class shopee_bert_mobile(shopee_raw):
             data_root_dir, max_len=200, is_train=is_train, infer=infer)
 
     def get_tokenizer(self, pretrain=None):
-        return transformers.MobileBertModel.from_pretrained('google/mobilebert-uncased')
+        return transformers.MobileBertTokenizer.from_pretrained('google/mobilebert-uncased')
 
 
 # test
