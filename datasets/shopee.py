@@ -142,6 +142,15 @@ class shopee_bert_distil(shopee_raw):
         return transformers.DistilBertTokenizer.from_pretrained('distilbert-base-uncased')
 
 
+class shopee_bert_distil_multi(shopee_raw):
+    def __init__(self, data_root_dir, max_len=200, is_train=True, infer=False):
+        super(shopee_bert_distil_multi, self).__init__(
+            data_root_dir, max_len=200, is_train=is_train, infer=infer)
+
+    def get_tokenizer(self, pretrain=None):
+        return transformers.DistilBertTokenizer.from_pretrained('distilbert-base-multilingual-cased')
+
+
 class shopee_bert_mobile(shopee_raw):
     def __init__(self, data_root_dir, max_len=200, is_train=True, infer=False):
         super(shopee_bert_mobile, self).__init__(

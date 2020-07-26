@@ -32,7 +32,7 @@ transformers.RobertaForSequenceClassification
 #         return res
 
 
-class ClassiferBlockV1(nn.Module):
+class ClassiferBlockV2(nn.Module):
 
     def __init__(self, feature_dim, out_dim):
         super().__init__()
@@ -56,37 +56,38 @@ class ClassiferBlockV1(nn.Module):
         res = self.seq_cls(avg_pool)
         return res
 
-# class ClassiferBlockV1(nn.Module):
 
-#     def __init__(self, feature_dim, out_dim):
-#         super().__init__()
-#         hidden_dim = 128
-#         self.lstm1 = nn.LSTM(feature_dim,
-#                              hidden_dim,
-#                              num_layers=1,
-#                              bidirectional=False,
-#                              batch_first=True)
+class ClassiferBlockV1(nn.Module):
 
-#         self.lstm2 = nn.LSTM(hidden_dim,
-#                              hidden_dim,
-#                              num_layers=1,
-#                              bidirectional=True,
-#                              batch_first=True)
+    def __init__(self, feature_dim, out_dim):
+        super().__init__()
+        hidden_dim = 128
+        self.lstm1 = nn.LSTM(feature_dim,
+                             hidden_dim,
+                             num_layers=1,
+                             bidirectional=False,
+                             batch_first=True)
 
-#         self.cls = nn.Sequential(
-#             nn.Linear(hidden_dim*2, hidden_dim),
-#             nn.ReLU(),
-#             nn.Linear(hidden_dim, hidden_dim),
-#             nn.ReLU(),
-#             nn.Linear(hidden_dim, out_dim)
-#         )
+        self.lstm2 = nn.LSTM(hidden_dim,
+                             hidden_dim,
+                             num_layers=1,
+                             bidirectional=True,
+                             batch_first=True)
 
-#     def forward(self, x):
-#         embeds, _ = self.lstm1(x[0])
-#         embeds, _ = self.lstm2(embeds)
-#         avg_pool = torch.mean(embeds, 1)
-#         res = self.cls(avg_pool)
-#         return res
+        self.cls = nn.Sequential(
+            nn.Linear(hidden_dim*2, hidden_dim),
+            nn.ReLU(),
+            nn.Linear(hidden_dim, hidden_dim),
+            nn.ReLU(),
+            nn.Linear(hidden_dim, out_dim)
+        )
+
+    def forward(self, x):
+        embeds, _ = self.lstm1(x[0])
+        embeds, _ = self.lstm2(embeds)
+        avg_pool = torch.mean(embeds, 1)
+        res = self.cls(avg_pool)
+        return res
 
 
 class baseline_sentiment_bert(nn.Module):
@@ -262,6 +263,34 @@ class bert_distil(nn.Module):
         self.nclasses = nclasses
         self.bert = transformers.DistilBertModel.from_pretrained(
             "distilbert-base-uncased")
+        if freeze:
+            self.freeze()
+
+        self.feature_dim = self.bert.config.hidden_size
+        self.classifier = ClassiferBlockV1(self.feature_dim, nclasses)
+
+    def forward(self, input_ids, attention_mask):
+        outputs = self.bert(
+            input_ids=input_ids,
+            attention_mask=attention_mask
+        )
+        embedded = outputs
+        logits = self.classifier(embedded)
+        return logits
+
+    def freeze(self):
+        for param in self.bert.parameters():
+            param.requires_grad = False
+
+
+class bert_distil_multi(nn.Module):
+    """Baseline model"""
+
+    def __init__(self, nclasses, freeze=False):
+        super().__init__()
+        self.nclasses = nclasses
+        self.bert = transformers.DistilBertModel.from_pretrained(
+            "distilbert-base-multilingual-cased")
         if freeze:
             self.freeze()
 
