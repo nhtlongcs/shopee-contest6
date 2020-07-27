@@ -80,12 +80,16 @@ class ClassiferBlockV1(nn.Module):
             nn.ReLU(),
             nn.Linear(hidden_dim, hidden_dim),
             nn.ReLU(),
-            nn.Dropout(p=0.15),
             nn.Linear(hidden_dim, out_dim)
         )
 
     def forward(self, x):
-        embeds, _ = self.lstm1(x[0])
+        seq_embed = x[0]
+        seq_embed = seq_embed[:, 0, :]
+        seq_embed = seq_embed.unsqueeze(1)
+        print(seq_embed.shape)
+        sad
+        embeds, _ = self.lstm1(seq_embed)
         embeds, _ = self.lstm2(embeds)
         avg_pool = torch.mean(embeds, 1)
         res = self.cls(avg_pool)
@@ -349,6 +353,34 @@ class bert_roberta(nn.Module):
         self.nclasses = nclasses
         self.bert = transformers.RobertaModel.from_pretrained(
             'distilroberta-base')
+        if freeze:
+            self.freeze()
+
+        self.feature_dim = self.bert.config.hidden_size
+        self.classifier = ClassiferBlockV1(self.feature_dim, nclasses)
+
+    def forward(self, input_ids, attention_mask):
+        outputs = self.bert(
+            input_ids=input_ids,
+            attention_mask=attention_mask
+        )
+        embedded = outputs
+        logits = self.classifier(embedded)
+        return logits
+
+    def freeze(self):
+        for param in self.bert.parameters():
+            param.requires_grad = False
+
+
+class bert_roberta_multi(nn.Module):
+    """Baseline model"""
+
+    def __init__(self, nclasses, freeze=False):
+        super().__init__()
+        self.nclasses = nclasses
+        self.bert = transformers.XLMRobertaModel.from_pretrained(
+            'xlm-roberta-base')
         if freeze:
             self.freeze()
 

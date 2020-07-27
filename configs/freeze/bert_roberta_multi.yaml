@@ -1,7 +1,7 @@
 id: 3
 pretrained: Null
 model:
-    name:                       bert_base
+    name:                       bert_roberta_multi
     args:
         nclasses:               5
         freeze:                 True
@@ -29,24 +29,25 @@ scheduler:
         verbose:                  True         
 dataset:
     train:
-        name: shopee_bert_base
+        name: shopee_bert_roberta_multi
         args:
             data_root_dir:      ./data/clean/split/         
             is_train:           True  
         loader:
             name: shopee_loader
             args:
-                batch_size:     2
+                batch_size:     64
                 shuffle:        True
     val:
-        name: shopee_bert_base
+        name: shopee_bert_roberta_multi
         args:
             data_root_dir:      ./data/clean/split/          
             is_train:           False  
         loader:
             name: shopee_loader
             args:
-                batch_size:     2
+                batch_size:     64
+                shuffle:        True
 trainer: 
     nepochs: 50
     cp_dir: ./cp

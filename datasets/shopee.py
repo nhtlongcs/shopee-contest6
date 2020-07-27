@@ -169,6 +169,15 @@ class shopee_bert_roberta(shopee_raw):
         return transformers.RobertaTokenizer.from_pretrained('distilroberta-base')
 
 
+class shopee_bert_roberta_multi(shopee_raw):
+    def __init__(self, data_root_dir, max_len=200, is_train=True, infer=False):
+        super(shopee_bert_roberta_multi, self).__init__(
+            data_root_dir, max_len=200, is_train=is_train, infer=infer)
+
+    def get_tokenizer(self, pretrain=None):
+        return transformers.XLMRobertaTokenizer.from_pretrained('xlm-roberta-base')
+
+
 # test
 if __name__ == "__main__":
     dataset = shopee_bert_base(
