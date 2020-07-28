@@ -6,30 +6,31 @@ from tqdm import tqdm
 transformers.RobertaForSequenceClassification
 
 
-# class ClassiferBlockV1(nn.Module):
+class ClassiferBlockV3(nn.Module):
 
-#     def __init__(self, feature_dim, out_dim):
-#         super().__init__()
-#         hidden_dim = 128
-#         self.lstm = nn.LSTM(feature_dim,
-#                             hidden_dim,
-#                             num_layers=1,
-#                             bidirectional=True,
-#                             batch_first=True)
+    def __init__(self, feature_dim, out_dim):
+        super().__init__()
+        hidden_dim = 128
+        self.lstm = nn.LSTM(feature_dim,
+                            hidden_dim,
+                            num_layers=1,
+                            bidirectional=True,
+                            batch_first=True)
 
-#         self.cls = nn.Sequential(
-#             nn.Linear(hidden_dim*2, hidden_dim),
-#             nn.ReLU(),
-#             nn.Linear(hidden_dim, hidden_dim),
-#             nn.ReLU(),
-#             nn.Linear(hidden_dim, out_dim)
-#         )
+        self.cls = nn.Sequential(
+            nn.Linear(feature_dim, hidden_dim),
+            nn.Dropout(0.2),
+            nn.BatchNorm1d(hidden_dim),
+            nn.ReLU(inplace=True),
+            nn.Dropout(0.2),
+            nn.Linear(feature_dim, out_dim)
+        )
 
-#     def forward(self, x):
-#         embeds, _ = self.lstm(x[0])
-#         avg_pool = torch.mean(embeds, 1)
-#         res = self.cls(avg_pool)
-#         return res
+    def forward(self, x):
+        seq_embed = x[0]
+        seq_embed = seq_embed[:, 0, :]
+        res = self.cls(seq_embed)
+        return res
 
 
 class ClassiferBlockV2(nn.Module):
