@@ -6,6 +6,41 @@ from tqdm import tqdm
 transformers.RobertaForSequenceClassification
 
 
+class ClassiferBlockV4(nn.Module):
+
+    def __init__(self, feature_dim, out_dim):
+        super().__init__()
+        hidden_dim = 128
+        self.lstm1 = nn.LSTM(feature_dim,
+                             hidden_dim,
+                             num_layers=1,
+                             bidirectional=False,
+                             batch_first=True)
+
+        self.lstm2 = nn.LSTM(hidden_dim,
+                             hidden_dim,
+                             num_layers=1,
+                             bidirectional=True,
+                             batch_first=True)
+
+        self.cls = nn.Sequential(
+            nn.Linear(hidden_dim*2, hidden_dim),
+            nn.Dropout(0.2),
+            nn.BatchNorm1d(hidden_dim),
+            nn.ReLU(inplace=True),
+            nn.Dropout(0.2),
+            nn.Linear(hidden_dim, out_dim)
+        )
+
+    def forward(self, x):
+        seq_embed = x[0]
+        embeds, _ = self.lstm1(seq_embed)
+        embeds, _ = self.lstm2(embeds)
+        avg_pool = torch.mean(embeds, 1)
+        res = self.cls(avg_pool)
+        return res
+
+
 class ClassiferBlockV3(nn.Module):
 
     def __init__(self, feature_dim, out_dim):
@@ -23,7 +58,7 @@ class ClassiferBlockV3(nn.Module):
             nn.BatchNorm1d(hidden_dim),
             nn.ReLU(inplace=True),
             nn.Dropout(0.2),
-            nn.Linear(feature_dim, out_dim)
+            nn.Linear(hidden_dim, out_dim)
         )
 
     def forward(self, x):
@@ -86,10 +121,6 @@ class ClassiferBlockV1(nn.Module):
 
     def forward(self, x):
         seq_embed = x[0]
-        seq_embed = seq_embed[:, 0, :]
-        seq_embed = seq_embed.unsqueeze(1)
-        print(seq_embed.shape)
-        sad
         embeds, _ = self.lstm1(seq_embed)
         embeds, _ = self.lstm2(embeds)
         avg_pool = torch.mean(embeds, 1)
