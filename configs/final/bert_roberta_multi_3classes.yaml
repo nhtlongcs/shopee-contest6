@@ -1,0 +1,57 @@
+id: 1
+pretrained: Null
+model:
+    name:                       bert_roberta_multi
+    args:
+        nclasses:               3
+        freeze:                 False
+optimizer:
+    name:                       Adam
+    args:
+        lr:                     0.00001
+loss:
+    name:                       CrossEntropyLoss
+    args:
+        ignore_index:           3
+metric:
+    -   name:                   Accuracy
+        args:                   Null
+    -   name:                   ConfusionMatrix
+        args:                       
+            nclasses:           3
+
+scheduler:
+    name:                         ReduceLROnPlateau
+    args:
+        mode:                     min
+        factor:                   0.5
+        patience:                 5 
+        verbose:                  True         
+dataset:
+    train:
+        name: shopee_bert_roberta_multi
+        args:
+            data_root_dir:      ./data/clean/3classes/         
+            is_train:           True
+            offset:             False
+        loader:
+            name: shopee_loader
+            args:
+                batch_size:     2
+                shuffle:        True
+    val:
+        name: shopee_bert_roberta_multi
+        args:
+            data_root_dir:      ./data/clean/3classes/          
+            is_train:           False  
+            offset:             False
+        loader:
+            name: shopee_loader
+            args:
+                batch_size:     2
+                shuffle:        True
+trainer: 
+    nepochs: 50
+    cp_dir: ./cp
+    val_step: 1
+    log_step: 1

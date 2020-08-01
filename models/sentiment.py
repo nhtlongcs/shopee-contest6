@@ -6,6 +6,28 @@ from tqdm import tqdm
 transformers.RobertaForSequenceClassification
 
 
+class ClassiferBlockV5(nn.Module):
+
+    def __init__(self, feature_dim, out_dim):
+        super().__init__()
+        hidden_dim = 128
+
+        self.cls = nn.Sequential(
+            nn.Dropout(0.2),
+            nn.Linear(feature_dim*2, out_dim),
+        )
+
+    def forward(self, x):
+        seq_embed = x[0]
+
+        apool = torch.mean(o1, 1)
+        mpool, _ = torch.max(o1, 1)
+        cat = torch.cat((apool, mpool), 1)
+
+        res = self.cls(cat)
+        return res
+
+
 class ClassiferBlockV4(nn.Module):
 
     def __init__(self, feature_dim, out_dim):

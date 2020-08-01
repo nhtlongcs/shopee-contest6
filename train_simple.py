@@ -38,17 +38,17 @@ def train(config):
 
     # 1: Load datasets
     set_seed()
+    print("=================================")
     train_dataset = get_instance(config['dataset']['train'])
     train_dataloader = get_instance(config['dataset']['train']['loader'],
                                     dataset=train_dataset)
     print("=================================")
-    print("train :", len(train_dataset))
     print("train loader :", len(train_dataloader))
+    print("=================================")
     set_seed()
     val_dataset = get_instance(config['dataset']['val'])
     val_dataloader = get_instance(config['dataset']['val']['loader'],
                                   dataset=val_dataset)
-    print("val :", len(val_dataset))
     print("val loader :", len(val_dataloader))
     print("=================================")
     print("Total step = ", len(train_dataloader) + len(val_dataloader))
