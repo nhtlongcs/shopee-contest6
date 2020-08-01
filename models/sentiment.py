@@ -63,7 +63,7 @@ class ClassiferBlockV4(nn.Module):
         return res
 
 
-class ClassiferBlockV3(nn.Module):
+class ClassiferBlockV1(nn.Module):
 
     def __init__(self, feature_dim, out_dim):
         super().__init__()
@@ -76,10 +76,8 @@ class ClassiferBlockV3(nn.Module):
 
         self.cls = nn.Sequential(
             nn.Linear(feature_dim, hidden_dim),
-            nn.Dropout(0.2),
-            nn.BatchNorm1d(hidden_dim),
             nn.ReLU(inplace=True),
-            nn.Dropout(0.2),
+            # nn.Dropout(0.2),
             nn.Linear(hidden_dim, out_dim)
         )
 
@@ -115,7 +113,7 @@ class ClassiferBlockV2(nn.Module):
         return res
 
 
-class ClassiferBlockV1(nn.Module):
+class ClassiferBlockV3(nn.Module):
 
     def __init__(self, feature_dim, out_dim):
         super().__init__()
