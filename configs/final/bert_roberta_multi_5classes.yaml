@@ -51,7 +51,7 @@ dataset:
                 batch_size:     32
                 shuffle:        True
 trainer: 
-    nepochs: 50
+    nepochs: 10
     cp_dir: ./cp
     val_step: 1
     log_step: 1

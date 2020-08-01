@@ -100,7 +100,7 @@ def predict(config):
         tmp = tmp.argmax(-1).cpu()
         res = torch.cat((res, tmp), 0)
     length = res.shape[0]
-    if config['model']['args']['args']['nclasses'] == 3:
+    if config['model']['args']['nclasses'] == 3:
         res = res + torch.Tensor([3]*length).long()
     else:
         res = res + torch.Tensor([1]*length).long()
