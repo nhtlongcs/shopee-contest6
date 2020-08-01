@@ -106,7 +106,7 @@ def predict(config):
     idx = [x+1 for x in range(length)]
     df = pd.DataFrame(zip(idx, res_csv), columns=['review_id', 'rating'])
     print(length)
-    df.to_csv('submit.csv', index=False)
+    df.to_csv(config['out'], index=False)
 
 
 if __name__ == '__main__':
@@ -117,6 +117,7 @@ if __name__ == '__main__':
     parser.add_argument('--seed', default=123)
     parser.add_argument('--debug', default=False)
     parser.add_argument('--cp_dir', default='./cp')
+    parser.add_argument('--out', default='./submit.csv')
 
     args = parser.parse_args()
     seed_everything(seed=args.seed)
@@ -124,5 +125,6 @@ if __name__ == '__main__':
     config = yaml.load(open(config_path, 'r'), Loader=yaml.Loader)
     config['gpus'] = args.gpus
     config['debug'] = args.debug
+    config['out'] = args.out
     config['trainer']['cp_dir'] = args.cp_dir
     predict(config)
